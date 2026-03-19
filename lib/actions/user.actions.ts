@@ -1,7 +1,7 @@
 "use server"
 
-import dbConnect from "@/lib/mongodb";
-import User from "@/models/User";
+import dbConnect from "../mongodb";
+import User from "../../models/User";
 import { getServerSession } from "next-auth/next";
 
 export async function checkIsTeacher(): Promise<boolean> {

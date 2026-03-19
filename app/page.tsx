@@ -1,7 +1,7 @@
 import { getFiles } from "../lib/actions/fetch.actions";
 import { FileCard } from "../components/FileCard";
 import { SidebarFilter } from "../components/SidebarFilter";
-import { FileQuestion } from "lucide-react";
+import { FileQuestion, GraduationCap } from "lucide-react";
 
 export default async function Home({
   searchParams,
@@ -29,10 +29,10 @@ export default async function Home({
         <div className="md:col-span-3">
           {files.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12 text-center bg-white/40 dark:bg-slate-900/40 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 backdrop-blur-sm min-h-[400px]">
-              <FileQuestion className="h-16 w-16 text-slate-400 mb-4" />
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No files found</h3>
-              <p className="text-slate-600 dark:text-slate-400">
-                Try adjusting your search filters or check back later for new uploads.
+              <GraduationCap className="h-16 w-16 text-blue-500 mb-6" />
+              <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">Welcome to BioVision Remake</h3>
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-md">
+                No materials uploaded yet. Teachers, head over to the Dashboard to add the first notes!
               </p>
             </div>
           ) : (
