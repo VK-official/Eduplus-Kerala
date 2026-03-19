@@ -1,13 +1,12 @@
 import { getFiles } from "../lib/actions/fetch.actions";
 import { FileCard } from "../components/FileCard";
 import { SidebarFilter } from "../components/SidebarFilter";
-import { FileQuestion, GraduationCap } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: { q?: string; class?: string; subject?: string };
+export default async function Home(props: {
+  searchParams: Promise<{ q?: string; class?: string; subject?: string }>;
 }) {
+  const searchParams = await props.searchParams;
   const files = await getFiles(searchParams.q, searchParams.class, searchParams.subject);
 
   return (

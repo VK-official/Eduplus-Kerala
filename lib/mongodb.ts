@@ -1,9 +1,12 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
+const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+if (!MONGODB_URI || !MONGODB_URI.startsWith("mongodb")) {
+  throw new Error(
+    "❌ DATABASE ERROR: MONGODB_URI is missing or invalid in .env.local. " +
+    "Current value detected: " + (MONGODB_URI ? "HIDDEN_STRING" : "UNDEFINED")
+  );
 }
 
 let cached = (global as any).mongoose;
@@ -18,7 +21,9 @@ async function dbConnect() {
   }
 
   if (!cached.promise) {
-    const opts = { bufferCommands: false };
+    const opts = {
+      bufferCommands: false,
+    };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
       return mongoose;
