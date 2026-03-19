@@ -1,7 +1,7 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
-import { incrementDownload } from "@/lib/actions/file.actions";
+import { incrementDownload } from "../../../lib/actions/file.actions";
 
 export function DownloadButton({ fileId, driveUrl }: { fileId: string; driveUrl: string }) {
   const handleDownload = async () => {

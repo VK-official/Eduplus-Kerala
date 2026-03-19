@@ -1,8 +1,8 @@
 "use server"
 
-import dbConnect from "@/lib/mongodb";
-import FileModel from "@/models/File";
-import User from "@/models/User";
+import dbConnect from "../mongodb";
+import FileModel from "../../models/File";
+import User from "../../models/User";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
 
