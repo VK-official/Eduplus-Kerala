@@ -1,31 +1,33 @@
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "../components/header";
 import AuthProvider from "../components/AuthProvider";
 import { ThemeProvider } from "../components/theme-provider";
+import { BottomNavWrapper } from "../components/BottomNavWrapper";
+import { GSAPProvider } from "../components/GSAPProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Eduplus Kerala | Academic Excellence",
   description: "Premium educational resources for SCERT Kerala students.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-atlas-bg text-gray-200 flex flex-col font-sans antialiased overflow-x-hidden`}>
-        <AuthProvider>
+      <body className={`${inter.className} min-h-screen flex flex-col antialiased bg-[#001E2B] text-white`} suppressHydrationWarning>
+        <GSAPProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} forcedTheme="dark">
-            <Header />
-            <main className="flex-1 w-full bg-atlas-bg">{children}</main>
+            <AuthProvider>
+              <Header />
+              <main className="flex-1 w-full bg-[#001E2B] pb-32 relative z-0 pt-20">
+                {children}
+              </main>
+              <BottomNavWrapper />
+            </AuthProvider>
           </ThemeProvider>
-        </AuthProvider>
+        </GSAPProvider>
       </body>
     </html>
   );
