@@ -56,3 +56,14 @@ export async function uploadDriveLink(formData: FormData) {
     throw new Error(`Failed to upload file: ${error.message}`);
   }
 }
+
+export async function incrementDownload(fileId: string) {
+  try {
+    await dbConnect();
+    await FileModel.findByIdAndUpdate(fileId, { $inc: { downloads: 1 } });
+    revalidatePath("/");
+    revalidatePath(`/file/${fileId}`);
+  } catch (error) {
+    console.error("Error incrementing downloads:", error);
+  }
+}
