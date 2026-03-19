@@ -101,12 +101,14 @@ export function SidebarFilter() {
             className="block w-full rounded-lg border border-slate-300/50 bg-white/50 py-2 px-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700/50 dark:bg-slate-950/50 dark:text-white"
           >
             <option value="All" className="dark:bg-slate-900">All Subjects</option>
-            <option value="Physics" className="dark:bg-slate-900">Physics</option>
-            <option value="Chemistry" className="dark:bg-slate-900">Chemistry</option>
-            <option value="Biology" className="dark:bg-slate-900">Biology</option>
-            <option value="Mathematics" className="dark:bg-slate-900">Mathematics</option>
-            <option value="English" className="dark:bg-slate-900">English</option>
-            <option value="Computer Science" className="dark:bg-slate-900">Computer Science</option>
+            {[
+              "Malayalam", "English", "Mathematics", "Social Science", 
+              "Basic Science", "Physics", "Chemistry", "Biology", "IT"
+            ].map((sub) => (
+              <option key={sub} value={sub} className="dark:bg-slate-900">
+                {sub}
+              </option>
+            ))}
           </select>
         </div>
 

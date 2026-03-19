@@ -1,7 +1,7 @@
 import dbConnect from "../../../lib/mongodb";
 import FileModel from "../../../models/File";
 import { notFound } from "next/navigation";
-import { FileText, Download, ExternalLink, BookOpen, FileQuestion, GraduationCap } from "lucide-react";
+import { FileText, Download, BookOpen, FileQuestion, GraduationCap } from "lucide-react";
 import { DownloadButton } from "./DownloadButton";
 import { CommentSection } from "../../../components/CommentSection";
 

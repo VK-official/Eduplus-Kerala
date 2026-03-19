@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { uploadDriveLink } from "@/lib/actions/file.actions";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { uploadDriveLink } from "../../lib/actions/file.actions";
+import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 
 export function UploadForm() {
   const [loading, setLoading] = useState(false);
@@ -93,13 +93,19 @@ export function UploadForm() {
 
         <div className="space-y-2">
           <label htmlFor="subject" className="text-sm font-medium">Subject</label>
-          <input
+          <select
             id="subject"
             name="subject"
-            type="text"
             required
             className="w-full rounded-lg border border-gray-300/50 bg-white/50 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700/50 dark:bg-black/50"
-          />
+          >
+            {[
+              "Malayalam", "English", "Mathematics", "Social Science", 
+              "Basic Science", "Physics", "Chemistry", "Biology", "IT"
+            ].map(sub => (
+              <option key={sub} value={sub} className="dark:bg-transparent dark:text-black">{sub}</option>
+            ))}
+          </select>
         </div>
 
         <div className="space-y-2">
