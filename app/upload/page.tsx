@@ -1,26 +1,13 @@
-import { checkIsTeacher } from "@/lib/actions/user.actions";
-import { redirect } from "next/navigation";
-import { UploadForm } from "./UploadForm";
-
-export default async function UploadPage() {
-  const isTeacher = await checkIsTeacher();
-
-  if (!isTeacher) {
-    redirect("/");
-  }
-
+// app/page.tsx
+export default function Home() {
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-          Teacher Upload Dashboard
-        </h1>
-        <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-          Upload class materials securely to the global repository.
-        </p>
-      </div>
-
-      <UploadForm />
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+      <h1 className="text-5xl font-extrabold tracking-tight lg:text-6xl">
+        Welcome to <span className="text-blue-600 dark:text-blue-400">BioVision</span> Hub
+      </h1>
+      <p className="text-xl text-slate-500 dark:text-slate-400 max-w-2xl">
+        Your new, smart educational platform is officially online. Phase 4 will transform this space into the ultimate search dashboard.
+      </p>
     </div>
-  );
+  )
 }

@@ -1,5 +1,29 @@
 {
   "name": "bio-vision-remake",
   "version": "0.1.0",
-  "private": true
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "next-auth": "^4.24.13",
+    "mongoose": "latest",
+    "next-themes": "latest",
+    "lucide-react": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5.9.3",
+    "tailwindcss": "latest",
+    "postcss": "latest",
+    "autoprefixer": "latest"
+  }
 }
