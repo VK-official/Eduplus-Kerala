@@ -8,8 +8,8 @@ import { ThemeProvider } from "../components/theme-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "BioVision Hub",
-  description: "Educational Resource Platform",
+  title: "Eduplus Kerala | Academic Excellence",
+  description: "Premium educational resources for SCERT Kerala students.",
 };
 
 export default function RootLayout({
@@ -19,11 +19,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50`}>
+      <body className={`${inter.className} min-h-screen bg-atlas-bg text-gray-200 flex flex-col font-sans antialiased overflow-x-hidden`}>
         <AuthProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} forcedTheme="dark">
             <Header />
-            <main>{children}</main>
+            <main className="flex-1 w-full bg-atlas-bg">{children}</main>
           </ThemeProvider>
         </AuthProvider>
       </body>

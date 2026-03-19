@@ -2,123 +2,104 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search, Filter } from "lucide-react";
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect } from "react";
+import { CustomSelect } from "./CustomSelect";
+
+// Local bulletproof mapping to override any bad constants.ts logic
+const ACADEMIC_MAP: Record<string, string[]> = {
+  "LP": ["Malayalam", "English", "EVS", "Mathematics"],
+  "UP": ["Malayalam", "English", "Hindi", "Basic Science", "Social Science", "Mathematics"],
+  "HS": ["Malayalam", "English", "Hindi", "Physics", "Chemistry", "Biology", "Social Science", "Mathematics", "IT"],
+  "HSS": ["Physics", "Chemistry", "Biology", "Mathematics", "Computer Science", "Accountancy", "Economics", "Business Studies", "Political Science", "History"]
+};
+
+function getSubjectsForClassNum(classNum: string): string[] {
+  if (classNum === "All") return ["All Subjects", ...Array.from(new Set(Object.values(ACADEMIC_MAP).flat()))];
+  const num = Number(classNum);
+  if (num >= 1 && num <= 4) return ["All Subjects", ...ACADEMIC_MAP["LP"]];
+  if (num >= 5 && num <= 7) return ["All Subjects", ...ACADEMIC_MAP["UP"]];
+  if (num >= 8 && num <= 10) return ["All Subjects", ...ACADEMIC_MAP["HS"]];
+  if (num >= 11 && num <= 12) return ["All Subjects", ...ACADEMIC_MAP["HSS"]];
+  return ["All Subjects"];
+}
 
 export function SidebarFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const [query, setQuery] = useState("");
-  const [classNum, setClassNum] = useState("All");
-  const [subject, setSubject] = useState("All");
+  const [query, setQuery] = useState(searchParams.get("q") || "");
+  const [classNum, setClassNum] = useState(searchParams.get("class") || "All");
+  const [subject, setSubject] = useState(searchParams.get("subject") || "All");
+
+  const [availableSubjects, setAvailableSubjects] = useState<string[]>(["All Subjects"]);
 
   useEffect(() => {
-    setQuery(searchParams.get("q") || "");
-    setClassNum(searchParams.get("class") || "All");
-    setSubject(searchParams.get("subject") || "All");
-  }, [searchParams]);
-
-  const applyFilters = (e?: FormEvent) => {
-    if (e) e.preventDefault();
-    const params = new URLSearchParams(searchParams.toString());
+    const allowed = getSubjectsForClassNum(classNum);
+    setAvailableSubjects(allowed);
     
-    if (query) {
-      params.set("q", query);
-    } else {
-      params.delete("q");
+    const subjectValue = subject === "All" ? "All Subjects" : subject;
+    if (subjectValue !== "All Subjects" && !allowed.includes(subjectValue)) {
+      setSubject("All");
     }
+  }, [classNum]);
 
-    if (classNum && classNum !== "All") {
-      params.set("class", classNum);
-    } else {
-      params.delete("class");
-    }
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const params = new URLSearchParams();
+      if (query) params.set("q", query);
+      if (classNum && classNum !== "All") params.set("class", classNum);
+      if (subject && subject !== "All" && subject !== "All Subjects") params.set("subject", subject);
+      
+      router.push(pathname + "?" + params.toString());
+    }, 400); 
+    return () => clearTimeout(timeout);
+  }, [query, classNum, subject, pathname, router]);
 
-    if (subject && subject !== "All") {
-      params.set("subject", subject);
-    } else {
-      params.delete("subject");
-    }
-
-    router.push(pathname + "?" + params.toString());
-  };
+  const classOptions = ["All Classes", ...Array.from({length: 12}, (_, i) => `Class ${i + 1}`)];
+  const displayClass = classNum === "All" ? "All Classes" : `Class ${classNum}`;
+  const displaySubject = subject === "All" ? "All Subjects" : subject;
 
   return (
-    <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm sticky top-24">
+    <div className="bg-[#012B39]/80 p-6 rounded-xl border border-white/5 backdrop-blur-md transition-all hover:border-[#00ED64]/50 sticky top-28 shadow-xl z-30">
       <div className="flex items-center gap-2 mb-6">
-        <Filter className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Filters</h2>
+        <Filter className="h-5 w-5 text-[#00ED64]" />
+        <h2 className="text-xl font-extrabold tracking-[-0.02em] text-white">Filters</h2>
       </div>
 
-      <form onSubmit={applyFilters} className="space-y-6">
+      <div className="space-y-6">
         <div className="space-y-2">
-          <label htmlFor="search" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            Search
-          </label>
-          <div className="relative">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <Search className="h-4 w-4 text-slate-400" />
-            </div>
+          <label className="text-xs font-bold text-slate-300 tracking-widest uppercase">Search Keyword</label>
+          <div className="relative z-10">
+            <Search className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" />
             <input
-              id="search"
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Keywords..."
-              className="block w-full rounded-lg border border-slate-300/50 bg-white/50 py-2 pl-10 pr-3 text-sm text-slate-900 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700/50 dark:bg-slate-950/50 dark:text-white dark:placeholder-slate-400"
+              placeholder="e.g. Gravity..."
+              className="w-full bg-[#001E2B] border border-gray-600 rounded-lg p-3 pl-11 pr-3 text-white focus:border-[#00ED64] outline-none transition-colors shadow-sm focus:shadow-[0_0_15px_rgba(0,237,100,0.1)]"
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="classNum" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            Class
-          </label>
-          <select
-            id="classNum"
-            value={classNum}
-            onChange={(e) => setClassNum(e.target.value)}
-            className="block w-full rounded-lg border border-slate-300/50 bg-white/50 py-2 px-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700/50 dark:bg-slate-950/50 dark:text-white"
-          >
-            <option value="All" className="dark:bg-slate-900">All Classes</option>
-            {[...Array(12)].map((_, i) => (
-              <option key={i + 1} value={i + 1} className="dark:bg-slate-900">
-                Class {i + 1}
-              </option>
-            ))}
-          </select>
+        <div className="space-y-2 z-50 relative">
+          <label className="text-xs font-bold text-slate-300 tracking-widest uppercase">Target Class</label>
+          <CustomSelect 
+            options={classOptions}
+            value={displayClass}
+            onChange={(val) => setClassNum(val === "All Classes" ? "All" : val.replace("Class ", ""))}
+          />
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="subject" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            Subject
-          </label>
-          <select
-            id="subject"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            className="block w-full rounded-lg border border-slate-300/50 bg-white/50 py-2 px-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700/50 dark:bg-slate-950/50 dark:text-white"
-          >
-            <option value="All" className="dark:bg-slate-900">All Subjects</option>
-            {[
-              "Malayalam", "English", "Mathematics", "Social Science", 
-              "Basic Science", "Physics", "Chemistry", "Biology", "IT"
-            ].map((sub) => (
-              <option key={sub} value={sub} className="dark:bg-slate-900">
-                {sub}
-              </option>
-            ))}
-          </select>
+        <div className="space-y-2 z-40 relative">
+          <label className="text-xs font-bold text-slate-300 tracking-widest uppercase">Academic Subject</label>
+          <CustomSelect 
+            options={availableSubjects}
+            value={displaySubject}
+            onChange={(val) => setSubject(val === "All Subjects" ? "All" : val)}
+          />
         </div>
-
-        <button
-          type="submit"
-          className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-        >
-          Apply Filters
-        </button>
-      </form>
+      </div>
     </div>
   );
 }
