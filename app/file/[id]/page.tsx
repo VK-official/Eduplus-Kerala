@@ -1,16 +1,20 @@
 import dbConnect from "../../../lib/mongodb";
-import FileModel from "../../../models/File";
+import File from "../../../models/File";
 import { notFound } from "next/navigation";
-import { FileText, Download, ExternalLink, BookOpen, FileQuestion, GraduationCap } from "lucide-react";
+import { FileText, Download, BookOpen, FileQuestion, GraduationCap } from "lucide-react";
 import { DownloadButton } from "./DownloadButton";
 
-export default async function FileDetailPage({ params }: { params: Promise<{ id: string }> }) {
+type PageProps = { params: Promise<{ id: string }> };
+
+export default async function FilePage(props: PageProps) {
+  const params = await props.params;
+  const id = params.id;
+  
   await dbConnect();
   
   let file;
   try {
-    const { id } = await params;
-    const fileDoc = await FileModel.findById(id).populate('uploaderId', 'name email').lean();
+    const fileDoc = await File.findById(id).populate('uploaderId', 'name email').lean();
     if (!fileDoc) return notFound();
     file = JSON.parse(JSON.stringify(fileDoc));
   } catch (e) {
