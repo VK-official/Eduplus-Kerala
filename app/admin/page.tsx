@@ -1,0 +1,142 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { PageWrapper } from "../../components/PageWrapper";
+import { UploadForm } from "../../components/UploadForm";
+import { supabase } from "../../lib/supabase";
+import { motion, AnimatePresence } from "framer-motion";
+import { ShieldCheck, Mail, Key, Loader2, AlertCircle } from "lucide-react";
+
+export default function AdminPage() {
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [step, setStep] = useState<"email" | "otp" | "verified">("email");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [uploaderEmail, setUploaderEmail] = useState("");
+
+  const handleSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true); setError(null);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({ email });
+      if (error) throw error;
+      setStep("otp");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true); setError(null);
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
+      if (error) throw error;
+      if (data.user) {
+        setUploaderEmail(data.user.email!);
+        setStep("verified");
+      }
+    } catch (err: any) {
+      setError("Invalid OTP. Verification failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (step === "verified") {
+    return (
+      <PageWrapper>
+        <div className="min-h-screen bg-[#001E2B] pt-12 pb-32">
+          <div className="max-w-4xl mx-auto px-4">
+            <div className="flex items-center gap-3 mb-8 px-6 py-3 rounded-full bg-[#00ED64]/10 border border-[#00ED64]/20 w-fit">
+              <ShieldCheck className="h-5 w-5 text-[#00ED64]" />
+              <span className="text-[#00ED64] text-xs font-black uppercase tracking-widest">
+                Identity Verified: {uploaderEmail}
+              </span>
+            </div>
+            <UploadForm verifiedEmail={uploaderEmail} />
+          </div>
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  return (
+    <PageWrapper>
+      <div className="min-h-screen bg-[#001E2B] flex items-center justify-center p-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md bg-[#012B39]/60 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden"
+        >
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#00ED64]/5 rounded-full blur-[80px]" />
+          
+          <div className="relative z-10 text-center mb-10">
+            <div className="inline-block p-4 bg-[#00ED64]/10 rounded-3xl border border-[#00ED64]/20 mb-6">
+              <ShieldCheck className="h-10 w-10 text-[#00ED64]" />
+            </div>
+            <h1 className="text-3xl font-black text-white uppercase tracking-tight leading-none mb-3">Identity Logging</h1>
+            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">IT Act 2000 Compliance Gate</p>
+          </div>
+
+          <AnimatePresence mode="wait">
+            {step === "email" ? (
+              <motion.form 
+                key="email" initial={{ opacity:0, x:20 }} animate={{ opacity:1, x:0 }} exit={{ opacity:0, x:-20 }}
+                onSubmit={handleSendOtp} className="space-y-6"
+              >
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                  <input 
+                    required type="email" value={email} onChange={e=>setEmail(e.target.value)}
+                    placeholder="Enter Teacher Email for Verification"
+                    className="w-full bg-[#001E2B] border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white placeholder:text-slate-600 focus:border-[#00ED64] outline-none transition-all font-bold uppercase text-sm tracking-widest"
+                  />
+                </div>
+                <button 
+                  disabled={loading}
+                  className="w-full py-4 rounded-2xl bg-[#00ED64] text-[#012B39] font-black uppercase tracking-widest hover:opacity-90 transition-all flex items-center justify-center gap-2"
+                >
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin"/> : "Request OTP"}
+                </button>
+              </motion.form>
+            ) : (
+              <motion.form 
+                key="otp" initial={{ opacity:0, x:20 }} animate={{ opacity:1, x:0 }} exit={{ opacity:0, x:-20 }}
+                onSubmit={handleVerifyOtp} className="space-y-6"
+              >
+                <div className="relative">
+                  <Key className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                  <input 
+                    required type="text" maxLength={6} value={otp} onChange={e=>setOtp(e.target.value)}
+                    placeholder="ENTER 6-DIGIT CODE..."
+                    className="w-full bg-[#001E2B] border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white placeholder:text-slate-600 focus:border-[#00ED64] outline-none transition-all font-bold uppercase text-sm tracking-widest"
+                  />
+                </div>
+                {error && <p className="text-red-500 text-[10px] font-black uppercase tracking-widest text-center">{error}</p>}
+                <button 
+                  disabled={loading}
+                  className="w-full py-4 rounded-2xl bg-[#00ED64] text-[#012B39] font-black uppercase tracking-widest hover:opacity-90 transition-all flex items-center justify-center gap-2"
+                >
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin"/> : "Verify & Access Console"}
+                </button>
+                <button 
+                  type="button" onClick={()=>setStep("email")}
+                  className="w-full text-slate-600 text-[10px] font-black uppercase tracking-widest hover:text-slate-400 transition-colors"
+                >
+                  Use different email
+                </button>
+              </motion.form>
+            )}
+          </AnimatePresence>
+
+          <p className="mt-10 text-[10px] text-slate-600 font-bold leading-relaxed text-center uppercase tracking-wider">
+            By proceeding, you agree to fulfill the Intermediary Guidelines by providing verified identity logs for all uploads.
+          </p>
+        </motion.div>
+      </div>
+    </PageWrapper>
+  );
+}
