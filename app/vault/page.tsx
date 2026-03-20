@@ -3,6 +3,7 @@ import { SidebarFilter } from "../../components/SidebarFilter";
 import { PageWrapper } from "../../components/PageWrapper";
 import Link from "next/link";
 import { FileText, BookOpen, FileQuestion, ChevronRight } from "lucide-react";
+import { SearchInput } from "../../components/SearchInput";
 
 export const metadata = {
   title: "Class Vault | Eduplus Kerala",
@@ -55,6 +56,9 @@ export default async function VaultPage(props: {
             <h1 className="text-5xl md:text-7xl font-black text-white tracking-[-0.04em] leading-none uppercase">Class Vault</h1>
             <p className="text-slate-400 mt-4 text-lg max-w-2xl">Select a class and subject to browse curated materials.</p>
           </div>
+
+          {/* Global Search Engine */}
+          <SearchInput />
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div className="lg:col-span-1">

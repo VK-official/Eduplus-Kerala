@@ -19,6 +19,17 @@ export function ResourceActions({ fileId, viewLink, downloadLink, initialRating,
   const [ratingMsg, setRatingMsg] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // Drive Direct Download Hack
+  const getDirectDownload = (url: string) => {
+    if (url.includes("drive.google.com/file/d/")) {
+      const id = url.split("/d/")[1]?.split("/")[0];
+      return `https://drive.google.com/uc?export=download&id=${id}`;
+    }
+    return url;
+  };
+
+  const finalDownloadLink = getDirectDownload(downloadLink);
+
   const displayRating = selectedStar || Math.round(initialRating);
 
   const submitRating = async (stars: number) => {
@@ -57,7 +68,7 @@ export function ResourceActions({ fileId, viewLink, downloadLink, initialRating,
 
         {/* Direct Download */}
         <a
-          href={downloadLink}
+          href={finalDownloadLink}
           download
           className="group flex items-center justify-center gap-3 py-5 px-6 rounded-2xl font-black uppercase tracking-widest text-[#012B39] text-sm transition-all hover:opacity-90"
           style={{

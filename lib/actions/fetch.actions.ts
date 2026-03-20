@@ -19,6 +19,8 @@ export async function getFiles(searchQuery?: string, classNum?: string, subject?
       query.$or = [
         { title: { $regex: searchQuery, $options: "i" } },
         { subject: { $regex: searchQuery, $options: "i" } },
+        { description: { $regex: searchQuery, $options: "i" } },
+        { specialtyTag: { $regex: searchQuery, $options: "i" } },
       ];
     }
 
@@ -106,6 +108,30 @@ export async function updateCommentStatus(fileId: string, commentIndex: number, 
     }
 
     revalidatePath("/dashboard");
+    return { ok: true };
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
+export async function deleteFile(fileId: string) {
+  try {
+    const session = await getServerSession();
+    if (!session?.user?.email) throw new Error("Unauthorized");
+
+    await dbConnect();
+    const user = await User.findOne({ email: session.user.email }).lean();
+    if (!user) throw new Error("User not found");
+
+    // Only allow uploader to delete
+    const result = await File.deleteOne({ _id: fileId, uploaderId: user._id });
+    
+    if (result.deletedCount === 0) {
+      throw new Error("File not found or permission denied");
+    }
+
+    revalidatePath("/dashboard");
+    revalidatePath("/vault");
     return { ok: true };
   } catch (error: any) {
     throw new Error(error.message);

@@ -2,8 +2,8 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, AlertCircle, ShieldAlert, Check } from "lucide-react";
-import { updateCommentStatus } from "../lib/actions/fetch.actions";
+import { CheckCircle2, AlertCircle, ShieldAlert, Check, Trash2 } from "lucide-react";
+import { updateCommentStatus, deleteFile } from "../lib/actions/fetch.actions";
 
 interface Comment {
   user: string;
@@ -28,7 +28,6 @@ export function TeacherCommentDashboard({ initialFiles }: { initialFiles: FileWi
     setLoadingId(`${fileId}-${commentIdx}`);
     try {
       await updateCommentStatus(fileId, commentIdx, !currentStatus);
-      // Update local state for immediate feedback
       setFiles(prev => prev.map(f => {
         if (f._id === fileId) {
           const newComments = [...f.comments];
@@ -44,38 +43,58 @@ export function TeacherCommentDashboard({ initialFiles }: { initialFiles: FileWi
     }
   };
 
+  const handleDelete = async (fileId: string) => {
+    if (!confirm("Are you sure you want to PERMANENTLY delete this file? This cannot be undone.")) return;
+    try {
+      await deleteFile(fileId);
+      setFiles(prev => prev.filter(f => f._id !== fileId));
+    } catch (e) {
+      console.error(e);
+      alert("Failed to delete file.");
+    }
+  };
+
   if (files.length === 0) return null;
 
   return (
-    <section className="mt-12 rounded-3xl p-8 md:p-10 border border-[#00ED64]/10 bg-[#012B39]/30 backdrop-blur-3xl">
+    <section className="mt-12 rounded-3xl p-8 md:p-10 border border-red-500/20 bg-red-500/5 backdrop-blur-3xl animate-pulse-slow">
       <div className="flex items-center gap-4 mb-8">
-        <div className="p-3 bg-[#00ED64]/10 rounded-xl">
-          <ShieldAlert className="h-6 w-6 text-[#00ED64]" />
+        <div className="p-3 bg-red-500/10 rounded-xl">
+          <AlertCircle className="h-6 w-6 text-red-500" />
         </div>
         <div>
-          <h2 className="text-xl font-black text-white uppercase tracking-tight">File Reports & Comments</h2>
-          <p className="text-slate-500 text-sm">Review feedback and Malayalam error reports for your uploads.</p>
+          <h2 className="text-xl font-black text-white uppercase tracking-tight italic">Action Required: File Reports</h2>
+          <p className="text-slate-500 text-sm">Students have reported issues with these files. Review below.</p>
         </div>
       </div>
 
       <div className="space-y-6">
         {files.map((file) => (
           <div key={file._id} className="rounded-2xl border border-white/5 bg-[#001E2B]/50 p-6 overflow-hidden">
-            <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-4">
+            <div className="flex items-start justify-between mb-4 border-b border-white/5 pb-4">
               <div>
                 <h3 className="text-white font-bold">{file.title}</h3>
                 <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">
                   Class {file.class} · {file.subject}
                 </p>
               </div>
-              <span className="text-[10px] font-black px-2 py-1 rounded bg-[#00ED64]/10 text-[#00ED64] uppercase">
-                {file.comments.filter(c => !c.resolved).length} Pending
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-black px-2 py-1 rounded bg-[#00ED64]/10 text-[#00ED64] uppercase h-fit">
+                  {file.comments.filter(c => !c.resolved).length} Pending
+                </span>
+                <button
+                  onClick={() => handleDelete(file._id)}
+                  className="p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                  title="Delete File Permanently"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
             </div>
 
             <div className="space-y-4">
               {file.comments.map((comment, idx) => (
-                <div key={`${file._id}-${idx}`} className={`p-4 rounded-xl border ${comment.resolved ? "border-white/5 bg-transparent opacity-50" : "border-[#00ED64]/20 bg-[#00ED64]/5"} transition-all`}>
+                <div key={`${file._id}-${idx}`} className={`p-4 rounded-xl border ${comment.resolved ? "border-white/5 bg-[rgba(0,0,0,0)] opacity-50" : "border-[#00ED64]/20 bg-[#00ED64]/5"} transition-all`}>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">

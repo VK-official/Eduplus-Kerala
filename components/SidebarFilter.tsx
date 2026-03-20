@@ -62,6 +62,29 @@ export function SidebarFilter() {
       </div>
 
       <div className="space-y-6">
+        {/* Category Striker Tabs */}
+        <div className="grid grid-cols-2 gap-2 mb-4 p-1 rounded-xl bg-[#001E2B] border border-white/5">
+          <button
+            onClick={() => { if (classNum === "All" || Number(classNum) > 7) setClassNum("5"); }}
+            className={`py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+              (Number(classNum) >= 5 && Number(classNum) <= 7)
+                ? "bg-[#00ED64]/10 text-[#00ED64] border border-[#00ED64]/30 shadow-[0_0_20px_rgba(0,237,100,0.15)]"
+                : "text-slate-500 hover:text-slate-300 border border-[rgba(0,0,0,0)]"
+            }`}
+          >
+            UP (5–7)
+          </button>
+          <button
+            onClick={() => { if (Number(classNum) < 8) setClassNum("8"); }}
+            className={`py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+              Number(classNum) >= 8 && Number(classNum) <= 10
+                ? "bg-purple-500/10 text-purple-400 border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.15)]"
+                : "text-slate-500 hover:text-slate-300 border border-[rgba(0,0,0,0)]"
+            }`}
+          >
+            HS (8–10)
+          </button>
+        </div>
         <div className="space-y-2">
           <label className="text-xs font-bold text-slate-400 tracking-widest uppercase">Search</label>
           <div className="relative">
