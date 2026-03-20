@@ -4,11 +4,10 @@ import { useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, Send, ShieldAlert, ChevronDown } from "lucide-react";
-import { addComment } from "../lib/actions/comment.actions";
+import { addComment } from "../lib/actions/fetch.actions";
 
 interface Comment {
-  _id: string;
-  userName: string;
+  user: string;
   text: string;
   createdAt: string;
 }
@@ -40,9 +39,17 @@ export function CommentSection({ fileId, initialComments, uploaderName }: Props)
     setSubmitting(true);
     setError("");
     try {
-      const newComment = await addComment(fileId, text.trim());
-      setComments(prev => [newComment, ...prev]);
-      setText("");
+      const userName = session?.user?.name || session?.user?.email || "Student";
+      const { ok } = await addComment(fileId, userName, text.trim());
+      if (ok) {
+        const newComment: Comment = { 
+          user: userName, 
+          text: text.trim(), 
+          createdAt: new Date().toISOString() 
+        };
+        setComments(prev => [newComment, ...prev]);
+        setText("");
+      }
     } catch (err: any) {
       setError(err.message || "Failed to post comment.");
     } finally {
@@ -128,17 +135,17 @@ export function CommentSection({ fileId, initialComments, uploaderName }: Props)
           {comments.length === 0 ? (
             <p className="text-slate-600 text-sm text-center py-8">No comments yet. Be the first to discuss!</p>
           ) : (
-            comments.map((c) => {
-              const isUploader = uploaderName && c.userName === uploaderName;
+            comments.map((c, idx) => {
+              const isUploader = uploaderName && c.user === uploaderName;
               return (
                 <motion.div
-                  key={c._id}
+                  key={`${c.user}-${idx}-${c.createdAt}`}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="p-4 rounded-xl border border-white/5 bg-[#001E2B]/50"
                 >
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <span className="text-sm font-bold text-slate-300">{c.userName}</span>
+                    <span className="text-sm font-bold text-slate-300">{c.user}</span>
                     {isUploader && (
                       <span className="px-2 py-0.5 rounded-full bg-[#00ED64]/10 border border-[#00ED64]/20 text-[#00ED64] text-[10px] font-black uppercase tracking-widest">
                         Uploader

@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { getFileById } from "../../../lib/actions/fetch.actions";
-import { getComments } from "../../../lib/actions/comment.actions";
 import { getDirectLink } from "../../../lib/drive";
 import { ResourceActions } from "../../../components/ResourceActions";
 import { CommentSection } from "../../../components/CommentSection";
@@ -12,7 +11,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const file = await getFileById(id);
   if (!file) return { title: "Resource Not Found | Eduplus Kerala" };
   
-  // High-performance SEO: Class + Subject + Chapter indexing
   return {
     title: `Class ${file.class} ${file.subject} - ${file.chapter} | Eduplus Kerala Vault`,
     description: file.description || `Download Class ${file.class} ${file.subject} revision materials, model questions, and notes for SCERT Kerala 2026 syllabus.`,
@@ -22,17 +20,18 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function ResourcePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [file, comments] = await Promise.all([getFileById(id), getComments(id)]);
+  const file = await getFileById(id);
 
   if (!file) notFound();
 
-  const downloadLink = getDirectLink(file.driveUrl);
-  const viewLink     = file.driveUrl.includes("drive.google.com")
-    ? file.driveUrl.replace("/view", "/preview").replace(/\?.*$/, "")
-    : file.driveUrl;
+  const comments     = file.comments || [];
+  const downloadLink = getDirectLink(file.resource_link || "");
+  const viewLink     = file.resource_link?.includes("drive.google.com")
+    ? file.resource_link.replace("/view", "/preview").replace(/\?.*$/, "")
+    : file.resource_link;
 
-  const avgRating = file.ratingCount > 0
-    ? (file.totalStars / file.ratingCount).toFixed(1)
+  const avgRating = file.rating_count > 0
+    ? (file.total_stars / file.rating_count).toFixed(1)
     : null;
 
   return (
@@ -109,16 +108,16 @@ export default async function ResourcePage({ params }: { params: Promise<{ id: s
 
           {/* ── Action Buttons (Client Island) ── */}
           <ResourceActions
-            fileId={file._id}
+            fileId={file.id}
             viewLink={viewLink}
             downloadLink={downloadLink}
             initialRating={avgRating ? Number(avgRating) : 0}
-            ratingCount={file.ratingCount || 0}
+            ratingCount={file.rating_count || 0}
           />
 
           {/* ── Discussions & Reports (Client Island) ── */}
           <CommentSection
-            fileId={file._id}
+            fileId={file.id}
             initialComments={comments}
             uploaderName={file.uploaderName}
           />

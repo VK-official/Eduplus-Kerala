@@ -1,10 +1,8 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { Search, Filter, Book, BookOpen, User, Calendar, X } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { Search, Filter } from "lucide-react";
+import { useState, useEffect } from "react";
 import { CustomSelect } from "./CustomSelect";
-
 import { ACADEMIC_MAP, CLASS_LIST } from "../lib/utils/constants";
 
 function getSubjectsForClassNum(classNum: string): string[] {
@@ -25,6 +23,10 @@ interface SidebarFilterProps {
   setSubject: (s: string) => void;
 }
 
+/** 
+ * Eduplus Kerala - Phase 8 (OBLITERATE THE ROUTER)
+ * This component is strictly router-free. No useRouter, no router.push, no SearchParams.
+ */
 export function SidebarFilter({
   searchQuery,
   setSearchQuery,
@@ -33,35 +35,15 @@ export function SidebarFilter({
   subject,
   setSubject,
 }: SidebarFilterProps) {
-  const router       = useRouter();
-  const searchParams = useSearchParams();
-
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // Update subjects silently when class changes — no router interaction
+  // Purely reactive state management — no router pushing
   useEffect(() => {
     const subjects = getSubjectsForClassNum(classNum);
-    // Only reset subject if it's no longer valid for the new class
     if (subject !== "All" && !subjects.includes(subject)) {
       setSubject("All");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classNum]);
-
-  // Debounced push — ALWAYS goes to /vault, never back to /
-  const pushFilters = useCallback((q: string, cls: string, sub: string) => {
-    const params = new URLSearchParams();
-    if (q)                               params.set("q",       q);
-    if (cls !== "All")                   params.set("class",   cls);
-    if (sub !== "All")                   params.set("subject", sub);
-    const qs = params.toString();
-    router.push("/vault" + (qs ? "?" + qs : ""));
-  }, [router]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => pushFilters(searchQuery, classNum, subject), 400);
-    return () => clearTimeout(timer);
-  }, [searchQuery, classNum, subject, pushFilters]);
+  }, [classNum, subject, setSubject]);
 
   const classOptions   = ["All Classes", ...CLASS_LIST.map(c => `Class ${c}`)];
   const subjectsForClass = classNum !== "All" ? ACADEMIC_MAP[classNum] || {} : {};
@@ -70,18 +52,18 @@ export function SidebarFilter({
   const displaySubject = subject   === "All" ? "All Subjects" : subject;
 
   return (
-    <div className="bg-[#012B39]/80 p-6 rounded-xl border border-white/5 backdrop-blur-md hover:border-[#00ED64]/40 transition-colors sticky top-28 shadow-xl z-30">
+    <div className="bg-[#012B39]/80 p-6 rounded-3xl border border-white/5 backdrop-blur-md hover:border-[#00ED64]/40 transition-colors sticky top-28 shadow-xl z-30">
       <div className="flex items-center gap-2 mb-6">
         <Filter className="h-5 w-5 text-[#00ED64]" />
-        <h2 className="text-xl font-extrabold tracking-[-0.04em] text-white">Filters</h2>
+        <h2 className="text-xl font-extrabold tracking-[-0.04em] text-white uppercase font-black">Filters</h2>
       </div>
 
       <div className="space-y-6">
-        {/* Category Striker Tabs */}
-        <div className="grid grid-cols-2 gap-2 mb-4 p-1 rounded-xl bg-[#001E2B] border border-white/5">
+        {/* Category Tabs — Strictly onClick only, NO ROUTING */}
+        <div className="grid grid-cols-2 gap-2 mb-4 p-1 rounded-2xl bg-[#001E2B] border border-white/5 overflow-hidden">
           <button
-            onClick={() => { if (classNum === "All" || Number(classNum) > 7) setClassNum("5"); }}
-            className={`py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+            onClick={(e) => { e.preventDefault(); setClassNum("5"); }}
+            className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
               (Number(classNum) >= 5 && Number(classNum) <= 7)
                 ? "bg-[#00ED64]/10 text-[#00ED64] border border-[#00ED64]/30 shadow-[0_0_20px_rgba(0,237,100,0.15)]"
                 : "text-slate-500 hover:text-slate-300 border border-[rgba(0,0,0,0)]"
@@ -90,8 +72,8 @@ export function SidebarFilter({
             UP (5–7)
           </button>
           <button
-            onClick={() => { if (Number(classNum) < 8) setClassNum("8"); }}
-            className={`py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+            onClick={(e) => { e.preventDefault(); setClassNum("8"); }}
+            className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
               Number(classNum) >= 8 && Number(classNum) <= 10
                 ? "bg-purple-500/10 text-purple-400 border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.15)]"
                 : "text-slate-500 hover:text-slate-300 border border-[rgba(0,0,0,0)]"
@@ -100,22 +82,23 @@ export function SidebarFilter({
             HS (8–10)
           </button>
         </div>
+
         <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-400 tracking-widest uppercase">Search</label>
+          <label className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Direct Search</label>
           <div className="relative">
-            <Search className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-4 top-3.5 h-4 w-4 text-slate-500" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="e.g. Gravity..."
-              className="w-full bg-[#001E2B] border border-gray-700 rounded-lg p-3 pl-11 text-slate-200 placeholder:text-slate-600 focus:border-[#00ED64] outline-none transition-colors"
+              placeholder="e.g. Physics..."
+              className="w-full bg-[#001E2B] border border-gray-800 rounded-xl p-3 pl-11 text-slate-200 placeholder:text-slate-700 focus:border-[#00ED64] outline-none transition-colors"
             />
           </div>
         </div>
 
         <div className="space-y-2 relative z-50">
-          <label className="text-xs font-bold text-slate-400 tracking-widest uppercase">Class</label>
+          <label className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Class Index</label>
           <CustomSelect
             options={classOptions}
             value={displayClass}
@@ -124,7 +107,7 @@ export function SidebarFilter({
         </div>
 
         <div className="space-y-2 relative z-40">
-          <label className="text-xs font-bold text-slate-400 tracking-widest uppercase">Subject</label>
+          <label className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Subject Range</label>
           <CustomSelect
             options={subjectOptions}
             value={displaySubject}

@@ -1,40 +1,34 @@
 "use server";
 
-import dbConnect from "../mongodb";
-import File from "../../models/File";
-import User from "../../models/User";
-import mongoose from "mongoose";
-import { getServerSession } from "next-auth";
+import { supabase } from "../supabase";
 import { revalidatePath } from "next/cache";
 
-export async function getFiles(searchQuery?: string, classNum?: string, subject?: string) {
+/* 
+  Eduplus Kerala - Phase 7 (Supabase Sync)
+  Strict Postgres Schema:
+  - class (integer)
+  - subject (text)
+  - part (text)
+  - chapter (text)
+  - resource_type (text: 'notes', 'question_paper', 'a_plus')
+  - file_size (text)
+  - description (text)
+  - specialty_tag (text)
+  - resource_link (text)
+  - comments (jsonb)
+  - total_stars (integer)
+  - rating_count (integer)
+*/
+
+export async function getFiles() {
   try {
-    await dbConnect();
-    const query: any = {
-      // Enforce strict class 5-10 range at query level
-      class: { $gte: 5, $lte: 10 },
-    };
+    const { data, error } = await supabase
+      .from('resources')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-    if (searchQuery) {
-      query.$or = [
-        { title: { $regex: searchQuery, $options: "i" } },
-        { subject: { $regex: searchQuery, $options: "i" } },
-        { description: { $regex: searchQuery, $options: "i" } },
-        { specialtyTag: { $regex: searchQuery, $options: "i" } },
-      ];
-    }
-
-    if (classNum && classNum !== "All") {
-      const n = Number(classNum);
-      if (n >= 5 && n <= 10) query.class = n;
-    }
-
-    if (subject && subject !== "All") {
-      query.subject = { $regex: subject, $options: "i" };
-    }
-
-    const results = await File.find(query).sort({ createdAt: -1 }).lean();
-    return JSON.parse(JSON.stringify(results));
+    if (error) throw error;
+    return data || [];
   } catch (error) {
     console.error("Error fetching files:", error);
     return [];
@@ -43,10 +37,14 @@ export async function getFiles(searchQuery?: string, classNum?: string, subject?
 
 export async function getFileById(id: string) {
   try {
-    await dbConnect();
-    const file = await File.findById(id).lean();
-    if (!file) return null;
-    return JSON.parse(JSON.stringify(file));
+    const { data, error } = await supabase
+      .from('resources')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) throw error;
+    return data;
   } catch (error) {
     console.error("Error fetching file by id:", error);
     return null;
@@ -55,14 +53,26 @@ export async function getFileById(id: string) {
 
 export async function addRating(fileId: string, stars: number) {
   try {
-    const session = await getServerSession();
-    if (!session?.user?.email) throw new Error("Sign in to rate.");
     if (stars < 1 || stars > 5) throw new Error("Invalid rating.");
-    await dbConnect();
-    // Use a simple $inc on totalStars and $inc on ratingCount for average calculation
-    await File.findByIdAndUpdate(fileId, {
-      $inc: { totalStars: stars, ratingCount: 1 },
-    });
+    
+    const { data: current, error: getError } = await supabase
+      .from('resources')
+      .select('total_stars, rating_count')
+      .eq('id', fileId)
+      .single();
+
+    if (getError) throw getError;
+
+    const { error: updError } = await supabase
+      .from('resources')
+      .update({
+        total_stars: (current.total_stars || 0) + stars,
+        rating_count: (current.rating_count || 0) + 1
+      })
+      .eq('id', fileId);
+
+    if (updError) throw updError;
+
     revalidatePath(`/vault/${fileId}`);
     return { ok: true };
   } catch (error: any) {
@@ -70,96 +80,61 @@ export async function addRating(fileId: string, stars: number) {
   }
 }
 
-export async function getTeacherFilesWithComments() {
+export async function addComment(fileId: string, user: string, text: string) {
   try {
-    const session = await getServerSession();
-    if (!session?.user?.email) return [];
+    const { data: current, error: getError } = await supabase
+      .from('resources')
+      .select('comments')
+      .eq('id', fileId)
+      .single();
+
+    if (getError) throw getError;
+
+    const comments = current.comments || [];
+    const newComment = { user, text, createdAt: new Date().toISOString(), resolved: false };
     
-    await dbConnect();
-    const user = await User.findOne({ email: session.user.email }).lean();
-    if (!user) return [];
+    const { error: updError } = await supabase
+      .from('resources')
+      .update({ comments: [...comments, newComment] })
+      .eq('id', fileId);
 
-    const files = await File.find({ 
-      uploaderId: user._id, 
-      "comments.0": { $exists: true } 
-    }).sort({ updatedAt: -1 }).lean();
+    if (updError) throw updError;
 
-    return JSON.parse(JSON.stringify(files));
-  } catch (error) {
-    console.error("Error fetching teacher files with comments:", error);
-    return [];
-  }
-}
-
-export async function updateCommentStatus(fileId: string, commentIndex: number, resolved: boolean) {
-  try {
-    const session = await getServerSession();
-    if (!session?.user?.email) throw new Error("Unauthorized");
-    
-    await dbConnect();
-    const file = await File.findById(fileId);
-    if (!file) throw new Error("File not found");
-
-    if (file.comments && file.comments[commentIndex]) {
-      file.comments[commentIndex].resolved = resolved;
-      // Force Mongoose to track the change in the sub-document array
-      file.markModified('comments');
-      await file.save();
-    }
-
-    revalidatePath("/dashboard");
+    revalidatePath(`/vault/${fileId}`);
     return { ok: true };
   } catch (error: any) {
     throw new Error(error.message);
-  }
-}
-
-export async function deleteFile(fileId: string) {
-  try {
-    const session = await getServerSession();
-    if (!session?.user?.email) throw new Error("Unauthorized");
-
-    await dbConnect();
-    const user = await User.findOne({ email: session.user.email }).lean();
-    if (!user) throw new Error("User not found");
-
-    // Only allow uploader to delete
-    const result = await File.deleteOne({ _id: fileId, uploaderId: user._id });
-    
-    if (result.deletedCount === 0) {
-      throw new Error("File not found or permission denied");
-    }
-
-    revalidatePath("/dashboard");
-    revalidatePath("/vault");
-    return { ok: true };
-  } catch (error: any) {
-    throw new Error(error.message);
-  }
-}
-
-export async function getAllFilesForSitemap() {
-  try {
-    await dbConnect();
-    const files = await File.find({}, "_id updatedAt").lean();
-    return JSON.parse(JSON.stringify(files));
-  } catch (error) {
-    console.error("Error fetching files for sitemap:", error);
-    return [];
   }
 }
 
 export async function getTopResources(limit: number = 5) {
   try {
-    await dbConnect();
-    // Get top files by ratingCount or totalStars
-    const files = await File.find({})
-      .sort({ totalStars: -1, ratingCount: -1 })
-      .limit(limit)
-      .lean();
-    return JSON.parse(JSON.stringify(files));
+    const { data, error } = await supabase
+      .from('resources')
+      .select('*')
+      .order('total_stars', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
   } catch (error) {
     console.error("Error fetching top resources:", error);
     return [];
+  }
+}
+
+export async function deleteFile(fileId: string) {
+  try {
+    const { error } = await supabase
+      .from('resources')
+      .delete()
+      .eq('id', fileId);
+
+    if (error) throw error;
+
+    revalidatePath("/vault");
+    return { ok: true };
+  } catch (error: any) {
+    throw new Error(error.message);
   }
 }
