@@ -37,7 +37,7 @@ export default async function FilePage({ params }: { params: Promise<{ id: strin
                     <div className="flex items-center gap-2 mt-3">
                       <GraduationCap className="h-4 w-4 text-slate-500" />
                       <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">
-                        Uploader: <span className="text-[#00ED64]">{file.uploader_name || "Guest Faculty"}</span>
+                        Source: <span className="text-[#00ED64]">{file.uploader_name || "Guest Faculty"}</span>
                       </p>
                     </div>
                   </div>
@@ -57,7 +57,7 @@ export default async function FilePage({ params }: { params: Promise<{ id: strin
 
               {file.description && (
                 <div className="p-6 rounded-3xl bg-[#001E2B]/80 border border-white/5 mb-6">
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Resource Memo</p>
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Resource Overview</p>
                   <p className="text-slate-300 text-sm leading-relaxed font-medium">{file.description}</p>
                 </div>
               )}

@@ -90,7 +90,7 @@ export function VaultContent({ initialFiles = [] }: { initialFiles?: Resource[] 
     return (
       <div className="flex flex-col items-center justify-center py-40">
         <Loader2 className="h-10 w-10 text-[#00ED64] animate-spin mb-4" />
-        <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Syncing with Supabase...</p>
+        <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Syncing Resources...</p>
       </div>
     );
   }

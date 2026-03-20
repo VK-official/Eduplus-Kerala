@@ -140,7 +140,7 @@ export default async function HomePage() {
             <div className="divide-y divide-white/5">
               {topResources.length === 0 ? (
                 <div className="px-6 py-12 text-center text-slate-600 font-medium">
-                  Gathering weekly ranking data...
+                  Syncing Rankings...
                 </div>
               ) : (
                 topResources.map((mat: any, idx: number) => (

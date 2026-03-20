@@ -1,10 +1,9 @@
 import { notFound } from "next/navigation";
 import { getFileById } from "../../../lib/actions/fetch.actions";
-import { getDirectLink } from "../../../lib/drive";
 import { ResourceActions } from "../../../components/ResourceActions";
 import { CommentSection } from "../../../components/CommentSection";
 import { PageWrapper } from "../../../components/PageWrapper";
-import { BookOpen, FileText, HardDrive, User, Tag, Layers } from "lucide-react";
+import { BookOpen, FileText, HardDrive, User, Tag, Layers, GraduationCap } from "lucide-react";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -13,8 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   
   return {
     title: `Class ${file.class} ${file.subject} - ${file.chapter} | Eduplus Kerala Vault`,
-    description: file.description || `Download Class ${file.class} ${file.subject} revision materials, model questions, and notes for SCERT Kerala 2026 syllabus.`,
-    keywords: [`Class ${file.class}`, file.subject, file.chapter, "SCERT Kerala", "Model Questions", "Revision Notes"],
+    description: file.description || `Download Class ${file.class} ${file.subject} revision materials.`,
   };
 }
 
@@ -25,11 +23,6 @@ export default async function ResourcePage({ params }: { params: Promise<{ id: s
   if (!file) notFound();
 
   const comments     = file.comments || [];
-  const downloadLink = getDirectLink(file.resource_link || "");
-  const viewLink     = file.resource_link?.includes("drive.google.com")
-    ? file.resource_link.replace("/view", "/preview").replace(/\?.*$/, "")
-    : file.resource_link;
-
   const avgRating = file.rating_count > 0
     ? (file.total_stars / file.rating_count).toFixed(1)
     : null;
@@ -48,78 +41,64 @@ export default async function ResourcePage({ params }: { params: Promise<{ id: s
 
           {/* ── Resource Header Card ── */}
           <div
-            className="rounded-3xl p-8 md:p-10 border border-[#00ED64]/15 mb-8"
+            className="rounded-[2.5rem] p-8 md:p-10 border border-[#00ED64]/15 mb-8 overflow-hidden relative"
             style={{ background: "rgba(1,43,57,0.55)", backdropFilter: "blur(24px)" }}
           >
-            {/* Class + Subject Badge Row */}
-            <div className="flex items-center gap-3 flex-wrap mb-6">
-              <span className="px-3 py-1 rounded-full bg-[#00ED64]/10 border border-[#00ED64]/20 text-[#00ED64] text-xs font-black uppercase tracking-widest">
-                Class {file.class}
-              </span>
-              <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-bold uppercase tracking-wider">
-                {file.subject}
-              </span>
-              {file.specialtyTag && (
-                <span className="px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-bold uppercase tracking-wider">
-                  {file.specialtyTag}
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#00ED64]/5 rounded-full blur-[80px]" />
+
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 flex-wrap mb-6">
+                <span className="px-3 py-1 rounded-full bg-[#00ED64]/10 border border-[#00ED64]/20 text-[#00ED64] text-xs font-black uppercase tracking-widest">
+                  Class {file.class}
                 </span>
+                <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-bold uppercase tracking-wider">
+                  {file.subject}
+                </span>
+                {file.specialty_tag && (
+                  <span className="px-3 py-1 rounded-full bg-[#00ED64]/5 border border-[#00ED64]/10 text-slate-400 text-xs font-bold uppercase tracking-wider">
+                    {file.specialty_tag}
+                  </span>
+                )}
+              </div>
+
+              <h1 className="text-3xl md:text-5xl font-black text-white tracking-[-0.04em] leading-tight mb-8 uppercase">
+                {file.title}
+              </h1>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <MetaItem icon={Layers}    label="Chapter"   value={file.chapter  || "General"} />
+                <MetaItem icon={HardDrive} label="Capacity"   value={file.file_size || "—"} />
+                <MetaItem icon={GraduationCap}      label="Source"  value={file.uploader_name || "Guest Faculty"} />
+                <MetaItem icon={Tag}       label="Category"  value={file.resource_type?.replace("_", " ") || "Notes"} />
+              </div>
+
+              {file.description && (
+                <div className="p-5 rounded-2xl bg-[#001E2B]/60 border border-white/5 mb-4">
+                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2">Resource Overview</p>
+                  <p className="text-slate-300 text-sm leading-relaxed font-medium">{file.description}</p>
+                </div>
               )}
-              <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-bold uppercase tracking-wider">
-                {file.format || "PDF"}
-              </span>
-            </div>
 
-            {/* Title */}
-            <h1 className="text-3xl md:text-5xl font-black text-white tracking-[-0.04em] leading-tight mb-6">
-              {file.title}
-            </h1>
-
-            {/* Metadata Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <MetaItem icon={Layers}    label="Chapter"   value={file.chapter  || "—"} />
-              <MetaItem icon={HardDrive} label="File Size" value={file.fileSize || "—"} />
-              <MetaItem icon={User}      label="Uploader"  value={file.uploaderName || "Anonymous"} />
-              <MetaItem icon={Tag}       label="Category"  value={file.type?.replace("_", " ") || "Notes"} />
-            </div>
-
-            {/* Description */}
-            {file.description && (
-              <div className="p-5 rounded-2xl bg-[#001E2B]/60 border border-white/5 mb-4">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Description</p>
-                <p className="text-slate-300 text-sm leading-relaxed">{file.description}</p>
+              <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 mt-6">
+                <p className="text-red-500 font-bold text-[11px] uppercase tracking-wider">
+                  ശ്രദ്ധിക്കുക: ഈ ഫയലിൽ എന്തെങ്കിലും തെറ്റുകൾ ഉണ്ടെങ്കിൽ ദയവായി താഴെ റിപ്പോർട്ട് ചെയ്യുക.
+                </p>
               </div>
-            )}
-
-            {/* Covered Areas */}
-            {file.coveredAreas && (
-              <div className="p-5 rounded-2xl bg-[#001E2B]/60 border border-white/5 mb-4">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Topics Covered</p>
-                <p className="text-slate-300 text-sm leading-relaxed">{file.coveredAreas}</p>
-              </div>
-            )}
-
-            {/* ── Malayalam Warning ── */}
-            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/20 mt-4">
-              <p className="text-red-500 font-bold mt-0 text-sm leading-relaxed">
-                ശ്രദ്ധിക്കുക: ഈ ഫയലിൽ എന്തെങ്കിലും തെറ്റുകൾ ഉണ്ടെങ്കിൽ ദയവായി താഴെ കമന്റ് വഴി അറിയിക്കുക.
-              </p>
             </div>
           </div>
 
-          {/* ── Action Buttons (Client Island) ── */}
           <ResourceActions
             fileId={file.id}
-            viewLink={viewLink}
-            downloadLink={downloadLink}
+            viewLink={file.resource_link}
+            downloadLink={file.resource_link}
             initialRating={avgRating ? Number(avgRating) : 0}
             ratingCount={file.rating_count || 0}
           />
 
-          {/* ── Discussions & Reports (Client Island) ── */}
           <CommentSection
             fileId={file.id}
             initialComments={comments}
-            uploaderName={file.uploaderName}
+            uploaderName={file.uploader_name}
           />
         </div>
       </div>
@@ -129,11 +108,11 @@ export default async function ResourcePage({ params }: { params: Promise<{ id: s
 
 function MetaItem({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
   return (
-    <div className="flex items-start gap-3 p-4 rounded-xl bg-[#001E2B]/50 border border-white/5">
+    <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#001E2B]/50 border border-white/5 group hover:border-[#00ED64]/20 transition-all">
       <Icon className="h-4 w-4 text-[#00ED64] mt-0.5 shrink-0" />
       <div>
-        <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">{label}</p>
-        <p className="text-slate-300 text-sm font-semibold mt-0.5 break-words">{value}</p>
+        <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{label}</p>
+        <p className="text-slate-300 text-xs font-bold mt-0.5 break-words uppercase">{value}</p>
       </div>
     </div>
   );
