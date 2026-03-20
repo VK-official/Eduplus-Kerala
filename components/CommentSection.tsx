@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, Send, ShieldAlert, ChevronDown } from "lucide-react";
 import { addComment } from "../lib/actions/fetch.actions";
@@ -26,7 +25,7 @@ const REPORT_TEMPLATES = [
 ];
 
 export function CommentSection({ fileId, initialComments, uploaderName }: Props) {
-  const { data: session } = useSession();
+  const session = null; // NextAuth Eradicated - Phase 10
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -39,7 +38,7 @@ export function CommentSection({ fileId, initialComments, uploaderName }: Props)
     setSubmitting(true);
     setError("");
     try {
-      const userName = session?.user?.name || session?.user?.email || "Student";
+      const userName = "Guest Student"; // Supabase Auth Coming Soon
       const { ok } = await addComment(fileId, userName, text.trim());
       if (ok) {
         const newComment: Comment = { 
@@ -95,39 +94,33 @@ export function CommentSection({ fileId, initialComments, uploaderName }: Props)
       </div>
 
       {/* Comment Form */}
-      {session ? (
-        <form onSubmit={handleSubmit} className="mb-8">
-          <div className="relative">
-            <textarea
-              ref={inputRef}
-              value={text}
-              onChange={e => setText(e.target.value)}
-              rows={3}
-              placeholder="Write a comment, correction, or report…"
-              className="w-full bg-[#001E2B] border border-gray-700 rounded-xl p-4 pr-14 text-slate-200 placeholder:text-slate-600 focus:border-[#00ED64] outline-none resize-none text-sm font-medium transition-colors"
-            />
-            <button
-              type="submit"
-              disabled={!text.trim() || submitting}
-              className="absolute right-3 bottom-3 p-2.5 rounded-xl bg-[#00ED64]/10 border border-[#00ED64]/20 text-[#00ED64] hover:bg-[#00ED64]/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-            >
-              <Send className="h-4 w-4" />
-            </button>
-          </div>
-          <AnimatePresence>
-            {error && (
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="flex items-center gap-2 text-xs font-bold text-red-400 mt-2">
-                <ShieldAlert className="h-3.5 w-3.5" />{error}
-              </motion.p>
-            )}
-          </AnimatePresence>
-        </form>
-      ) : (
-        <div className="mb-8 p-4 rounded-xl bg-[#001E2B]/60 border border-white/5 text-center">
-          <p className="text-slate-500 text-sm font-semibold">Sign in to post a comment or report an error.</p>
+      <form onSubmit={handleSubmit} className="mb-8">
+        <div className="relative">
+          <textarea
+            ref={inputRef}
+            value={text}
+            onChange={e => setText(e.target.value)}
+            rows={3}
+            placeholder="Write a comment, correction, or report…"
+            className="w-full bg-[#001E2B] border border-gray-700 rounded-xl p-4 pr-14 text-slate-200 placeholder:text-slate-600 focus:border-[#00ED64] outline-none resize-none text-sm font-medium transition-colors"
+          />
+          <button
+            type="submit"
+            disabled={!text.trim() || submitting}
+            className="absolute right-3 bottom-3 p-2.5 rounded-xl bg-[#00ED64]/10 border border-[#00ED64]/20 text-[#00ED64] hover:bg-[#00ED64]/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            <Send className="h-4 w-4" />
+          </button>
         </div>
-      )}
+        <AnimatePresence>
+          {error && (
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="flex items-center gap-2 text-xs font-bold text-red-400 mt-2">
+              <ShieldAlert className="h-3.5 w-3.5" />{error}
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </form>
 
       {/* Comment List */}
       <div className="space-y-4">

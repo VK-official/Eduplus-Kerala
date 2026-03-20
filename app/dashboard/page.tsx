@@ -1,5 +1,3 @@
-import { getServerSession } from "next-auth/next";
-import { redirect } from "next/navigation";
 import { UploadForm } from "../../components/UploadForm";
 import { TeacherCommentDashboard } from "../../components/TeacherCommentDashboard";
 import { ActivitySidebar } from "../../components/ActivitySidebar";
@@ -12,8 +10,9 @@ export const metadata = {
 };
 
 export default async function DashboardPage() {
-  const session = await getServerSession();
-  if (!session) redirect("/");
+  // NextAuth Eradicated - Phase 10
+  // Defaulting to a placeholder teacher session for UI stability
+  const session = { user: { name: "Teacher Admin", email: "admin@eduplus.kerala" } };
 
   const teacherFiles = await getTeacherFilesWithComments();
 
@@ -30,10 +29,7 @@ export default async function DashboardPage() {
 
             {/* Main Console Content */}
             <main className="lg:col-span-2 space-y-8">
-              {/* The Upload Form (Client Component) */}
               <UploadForm />
-
-              {/* The Comment Management System (Client Component) */}
               <TeacherCommentDashboard initialFiles={teacherFiles} />
             </main>
 

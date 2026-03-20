@@ -4,9 +4,9 @@ import { supabase } from "../supabase";
 import { revalidatePath } from "next/cache";
 
 /* 
-  Eduplus Kerala - Phase 9 (Supabase Stabilization)
-  - Added safety guards for null supabase client.
-  - Purged all MongoDB references.
+  Eduplus Kerala - Phase 10 (Supabase resource management)
+  - NextAuth Eradicated.
+  - Added addResource for Supabase Postgres.
 */
 
 export async function getFiles() {
@@ -132,5 +132,59 @@ export async function deleteFile(fileId: string) {
     return { ok: true };
   } catch (error: any) {
     throw new Error(error.message);
+  }
+}
+
+export async function addResource(data: any) {
+  if (!supabase) return { ok: false, error: "Database not connected" };
+  try {
+    const { data: inserted, error } = await supabase
+      .from('resources')
+      .insert({
+        title: data.title,
+        class: data.classNum,
+        subject: data.subject,
+        part: data.part,
+        chapter: data.chapter,
+        format: data.format,
+        file_size: data.fileSize,
+        specialty_tag: data.specialtyTag,
+        resource_type: data.type,
+        covered_areas: data.coveredAreas,
+        description: data.description,
+        credits: data.credits,
+        uploader_name: data.uploaderName || "Teacher Admin",
+        resource_link: data.driveUrl,
+        rating_count: 0,
+        total_stars: 0,
+        comments: []
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    revalidatePath("/vault");
+    revalidatePath("/");
+    return inserted;
+  } catch (error: any) {
+    console.error("Error adding resource:", error);
+    throw new Error(error.message);
+  }
+}
+
+export async function getTeacherFilesWithComments() {
+  if (!supabase) return [];
+  try {
+    // For now, get all files since we don't have user roles fully wired to Supabase yet
+    const { data, error } = await supabase
+      .from('resources')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching teacher files:", error);
+    return [];
   }
 }

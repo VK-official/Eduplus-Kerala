@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadCloud, CheckCircle2, AlertCircle, ShieldAlert } from "lucide-react";
 
-import { uploadDriveFile } from "../lib/actions/upload.actions";
+import { addResource } from "../lib/actions/fetch.actions";
 import { CustomSelect } from "./CustomSelect";
 import {
   CLASS_LIST, getSubjectsForClass, getPartsForSubject,
@@ -55,7 +55,7 @@ export function UploadForm() {
     if (!canSubmit) return;
     setLoading(true); setResult(null);
     try {
-      await uploadDriveFile({ title, classNum: Number(classNum), subject, part, chapter, format, fileSize, specialtyTag, type: docType, coveredAreas, description, credits, uploaderName: uploaderName || undefined, driveUrl });
+      await addResource({ title, classNum: Number(classNum), subject, part, chapter, format, fileSize, specialtyTag, type: docType, coveredAreas, description, credits, uploaderName: uploaderName || undefined, driveUrl });
       setResult({ type: "success", msg: "TRANSMISSION SUCCESSFUL. Material is now live in the Vault." });
       setTitle(""); setFileSize(""); setCoveredAreas(""); setDescription(""); setCredits(""); setDriveUrl(""); setSpecialtyTag("");
     } catch (err: any) {

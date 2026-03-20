@@ -1,10 +1,9 @@
 "use client";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 export function Header() {
-  const { data: session } = useSession();
+  const session = null; // NextAuth Eradicated - Phase 10
   const { scrollY } = useScroll();
 
   const bgColor      = useTransform(scrollY, [0, 60], ["rgba(0,30,43,0)", "rgba(0,30,43,0.55)"]);
@@ -52,15 +51,15 @@ export function Header() {
         {/* Custom Auth Button — overrides default Google blue */}
         {session ? (
           <button
-            onClick={() => signOut()}
+            onClick={() => console.log("Sign out coming soon")}
             className="px-6 py-2 rounded-full border border-white/10 text-slate-300 text-sm font-semibold hover:bg-white/5 transition-colors"
           >
             Sign Out
           </button>
         ) : (
           <button
-            onClick={() => signIn("google")}
-            className="px-6 py-2 rounded-full bg-[#00ED64]/10 text-[#00ED64] border border-[#00ED64]/30 text-sm font-semibold hover:bg-[#00ED64]/20 transition-all"
+            onClick={() => console.log("Supabase Auth coming soon")}
+            className="px-6 py-2 rounded-full bg-[#00ED64]/10 text-[#00ED64] border border-[#00ED64]/30 text-sm font-semibold hover:bg-[#00ED64]/20 transition-all font-black uppercase tracking-widest"
             style={{ boxShadow: "none" }}
             onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 0 20px rgba(0,237,100,0.3)")}
             onMouseLeave={e => (e.currentTarget.style.boxShadow = "none")}
