@@ -32,7 +32,7 @@ export function LiquidGlass({ children, className = "", noHover = false }: { chi
               radial-gradient(
                 450px circle at ${mouseX}px ${mouseY}px,
                 rgba(0, 237, 100, 0.15),
-                transparent 80%
+                rgba(0, 0, 0, 0) 80%
               )
             `,
           }}

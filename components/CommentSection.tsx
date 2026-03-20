@@ -1,92 +1,160 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useSession } from "next-auth/react";
-import { addComment, getComments } from "../lib/actions/comment.actions";
-import { Loader2, Send } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageCircle, Send, ShieldAlert, ChevronDown } from "lucide-react";
+import { addComment } from "../lib/actions/comment.actions";
 
-export function CommentSection({ fileId }: { fileId: string }) {
+interface Comment {
+  _id: string;
+  userName: string;
+  text: string;
+  createdAt: string;
+}
+
+interface Props {
+  fileId: string;
+  initialComments: Comment[];
+  uploaderName?: string;
+}
+
+const REPORT_TEMPLATES = [
+  "ഈ ഫയലിൽ ഒരു തെറ്റ് ഉണ്ട്.",
+  "ലിങ്ക് പ്രവർത്തിക്കുന്നില്ല / Link not working.",
+  "ഉള്ളടക്കം തെറ്റായ ക്ലാസ്/വിഷയത്തിലേക്ക് ആണ്.",
+  "Thank you — very helpful material!",
+];
+
+export function CommentSection({ fileId, initialComments, uploaderName }: Props) {
   const { data: session } = useSession();
-  const [comments, setComments] = useState<any[]>([]);
+  const [comments, setComments] = useState<Comment[]>(initialComments);
   const [text, setText] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [fetching, setFetching] = useState(true);
-
-  useEffect(() => {
-    async function fetchComments() {
-      const data = await getComments(fileId);
-      setComments(data);
-      setFetching(false);
-    }
-    fetchComments();
-  }, [fileId]);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!text.trim()) return;
-    
-    setLoading(true);
+    if (!text.trim() || submitting) return;
+    setSubmitting(true);
+    setError("");
     try {
-      const newComment = await addComment(fileId, text);
-      setComments([newComment, ...comments]);
+      const newComment = await addComment(fileId, text.trim());
+      setComments(prev => [newComment, ...prev]);
       setText("");
-    } catch (error) {
-      console.error(error);
+    } catch (err: any) {
+      setError(err.message || "Failed to post comment.");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
+  const fillTemplate = (t: string) => {
+    setText(t);
+    inputRef.current?.focus();
+  };
+
   return (
-    <div className="mt-12 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md rounded-2xl p-6 border border-slate-200 dark:border-slate-800">
-      <h3 className="text-xl font-bold mb-6 text-slate-900 dark:text-white">Discussion</h3>
+    <section
+      className="rounded-3xl p-6 md:p-8 border border-white/5"
+      style={{ background: "rgba(1,43,57,0.40)", backdropFilter: "blur(24px)" }}
+    >
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6 pb-6 border-b border-white/5">
+        <div className="p-3 bg-[#00ED64]/10 rounded-xl">
+          <MessageCircle className="h-5 w-5 text-[#00ED64]" />
+        </div>
+        <div>
+          <h2 className="text-base font-black text-white uppercase tracking-widest">Discussions & Reports</h2>
+          <p className="text-slate-500 text-xs mt-0.5">{comments.length} {comments.length === 1 ? "comment" : "comments"}</p>
+        </div>
+      </div>
 
-      {session?.user ? (
-        <form onSubmit={handleSubmit} className="mb-8 relative">
-          <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Add to the discussion..."
-            className="w-full rounded-xl border border-slate-300/50 bg-white/70 p-4 pr-12 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700/50 dark:bg-slate-950/70 dark:text-white dark:placeholder-slate-400 min-h-[100px] resize-none"
-            required
-          />
-          <button
-            type="submit"
-            disabled={loading || !text.trim()}
-            className="absolute bottom-4 right-4 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-          >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-          </button>
-        </form>
-      ) : (
-        <div className="mb-8 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 text-center border border-blue-100 dark:border-blue-800/30">
-          Please log in to leave a comment.
-        </div>
-      )}
-
-      {fetching ? (
-        <div className="flex justify-center p-8">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-        </div>
-      ) : comments.length === 0 ? (
-        <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-          No comments yet. Be the first to share your thoughts!
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {comments.map((comment) => (
-            <div key={comment._id} className="p-4 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/50 shadow-sm">
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-semibold text-slate-900 dark:text-white">{comment.userName}</span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">
-                  {new Date(comment.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-              <p className="text-slate-700 dark:text-slate-300">{comment.text}</p>
-            </div>
+      {/* Quick Report Templates */}
+      <div className="mb-5">
+        <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2">Quick Templates</p>
+        <div className="flex flex-wrap gap-2">
+          {REPORT_TEMPLATES.map((t) => (
+            <button
+              key={t}
+              onClick={() => fillTemplate(t)}
+              className="text-[11px] px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-slate-400 hover:border-[#00ED64]/30 hover:text-[#00ED64] transition-all font-medium"
+            >
+              {t}
+            </button>
           ))}
         </div>
+      </div>
+
+      {/* Comment Form */}
+      {session ? (
+        <form onSubmit={handleSubmit} className="mb-8">
+          <div className="relative">
+            <textarea
+              ref={inputRef}
+              value={text}
+              onChange={e => setText(e.target.value)}
+              rows={3}
+              placeholder="Write a comment, correction, or report…"
+              className="w-full bg-[#001E2B] border border-gray-700 rounded-xl p-4 pr-14 text-slate-200 placeholder:text-slate-600 focus:border-[#00ED64] outline-none resize-none text-sm font-medium transition-colors"
+            />
+            <button
+              type="submit"
+              disabled={!text.trim() || submitting}
+              className="absolute right-3 bottom-3 p-2.5 rounded-xl bg-[#00ED64]/10 border border-[#00ED64]/20 text-[#00ED64] hover:bg-[#00ED64]/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              <Send className="h-4 w-4" />
+            </button>
+          </div>
+          <AnimatePresence>
+            {error && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="flex items-center gap-2 text-xs font-bold text-red-400 mt-2">
+                <ShieldAlert className="h-3.5 w-3.5" />{error}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </form>
+      ) : (
+        <div className="mb-8 p-4 rounded-xl bg-[#001E2B]/60 border border-white/5 text-center">
+          <p className="text-slate-500 text-sm font-semibold">Sign in to post a comment or report an error.</p>
+        </div>
       )}
-    </div>
+
+      {/* Comment List */}
+      <div className="space-y-4">
+        <AnimatePresence initial={false}>
+          {comments.length === 0 ? (
+            <p className="text-slate-600 text-sm text-center py-8">No comments yet. Be the first to discuss!</p>
+          ) : (
+            comments.map((c) => {
+              const isUploader = uploaderName && c.userName === uploaderName;
+              return (
+                <motion.div
+                  key={c._id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-4 rounded-xl border border-white/5 bg-[#001E2B]/50"
+                >
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <span className="text-sm font-bold text-slate-300">{c.userName}</span>
+                    {isUploader && (
+                      <span className="px-2 py-0.5 rounded-full bg-[#00ED64]/10 border border-[#00ED64]/20 text-[#00ED64] text-[10px] font-black uppercase tracking-widest">
+                        Uploader
+                      </span>
+                    )}
+                    <span className="text-xs text-slate-700 ml-auto">
+                      {new Date(c.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                    </span>
+                  </div>
+                  <p className="text-slate-400 text-sm leading-relaxed">{c.text}</p>
+                </motion.div>
+              );
+            })
+          )}
+        </AnimatePresence>
+      </div>
+    </section>
   );
 }

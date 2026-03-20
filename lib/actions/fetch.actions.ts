@@ -2,11 +2,18 @@
 
 import dbConnect from "../mongodb";
 import File from "../../models/File";
+import User from "../../models/User";
+import mongoose from "mongoose";
+import { getServerSession } from "next-auth";
+import { revalidatePath } from "next/cache";
 
 export async function getFiles(searchQuery?: string, classNum?: string, subject?: string) {
   try {
     await dbConnect();
-    const query: any = {};
+    const query: any = {
+      // Enforce strict class 5-10 range at query level
+      class: { $gte: 5, $lte: 10 },
+    };
 
     if (searchQuery) {
       query.$or = [
@@ -16,7 +23,8 @@ export async function getFiles(searchQuery?: string, classNum?: string, subject?
     }
 
     if (classNum && classNum !== "All") {
-      query.class = Number(classNum);
+      const n = Number(classNum);
+      if (n >= 5 && n <= 10) query.class = n;
     }
 
     if (subject && subject !== "All") {
@@ -28,5 +36,78 @@ export async function getFiles(searchQuery?: string, classNum?: string, subject?
   } catch (error) {
     console.error("Error fetching files:", error);
     return [];
+  }
+}
+
+export async function getFileById(id: string) {
+  try {
+    await dbConnect();
+    const file = await File.findById(id).lean();
+    if (!file) return null;
+    return JSON.parse(JSON.stringify(file));
+  } catch (error) {
+    console.error("Error fetching file by id:", error);
+    return null;
+  }
+}
+
+export async function addRating(fileId: string, stars: number) {
+  try {
+    const session = await getServerSession();
+    if (!session?.user?.email) throw new Error("Sign in to rate.");
+    if (stars < 1 || stars > 5) throw new Error("Invalid rating.");
+    await dbConnect();
+    // Use a simple $inc on totalStars and $inc on ratingCount for average calculation
+    await File.findByIdAndUpdate(fileId, {
+      $inc: { totalStars: stars, ratingCount: 1 },
+    });
+    revalidatePath(`/vault/${fileId}`);
+    return { ok: true };
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
+export async function getTeacherFilesWithComments() {
+  try {
+    const session = await getServerSession();
+    if (!session?.user?.email) return [];
+    
+    await dbConnect();
+    const user = await User.findOne({ email: session.user.email }).lean();
+    if (!user) return [];
+
+    const files = await File.find({ 
+      uploaderId: user._id, 
+      "comments.0": { $exists: true } 
+    }).sort({ updatedAt: -1 }).lean();
+
+    return JSON.parse(JSON.stringify(files));
+  } catch (error) {
+    console.error("Error fetching teacher files with comments:", error);
+    return [];
+  }
+}
+
+export async function updateCommentStatus(fileId: string, commentIndex: number, resolved: boolean) {
+  try {
+    const session = await getServerSession();
+    if (!session?.user?.email) throw new Error("Unauthorized");
+    
+    await dbConnect();
+    const file = await File.findById(fileId);
+    if (!file) throw new Error("File not found");
+
+    if (file.comments && file.comments[commentIndex]) {
+      file.comments[commentIndex].resolved = resolved;
+      // Force Mongoose to track the change in the sub-document array
+      file.markModified('comments');
+      await file.save();
+    }
+
+    revalidatePath("/dashboard");
+    return { ok: true };
+  } catch (error: any) {
+    throw new Error(error.message);
   }
 }

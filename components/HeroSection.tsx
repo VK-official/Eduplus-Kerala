@@ -1,6 +1,5 @@
 "use client";
 import { useRef, useEffect, useState } from "react";
-import { BookOpen, PenTool, GraduationCap } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -8,16 +7,25 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const TICKER = ["SCERT SYLLABUS", "SMART VAULT", "A+ FOCUS", "TEACHER-CURATED"];
 
+// SVG isometric grid background path
+const GRID_PATTERN = `
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+  <g fill="none" stroke="rgba(0,237,100,0.07)" stroke-width="0.5">
+    <path d="M40 0 L80 20 L80 60 L40 80 L0 60 L0 20 Z"/>
+    <path d="M40 0 L40 40"/>
+    <path d="M0 20 L40 40 L80 20"/>
+    <path d="M0 60 L40 40 L80 60"/>
+  </g>
+</svg>
+`.trim();
+const GRID_URI = `url("data:image/svg+xml,${encodeURIComponent(GRID_PATTERN)}")`;
+
 export function HeroSection() {
-  const containerRef  = useRef<HTMLDivElement>(null);
-  const cardRef       = useRef<HTMLDivElement>(null);
-  const icon1         = useRef<HTMLDivElement>(null);
-  const icon2         = useRef<HTMLDivElement>(null);
-  const icon3         = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const gridRef      = useRef<HTMLDivElement>(null);
 
   const [tickIdx, setTickIdx] = useState(0);
 
-  // Y-Axis slot machine cycle
   useEffect(() => {
     const timer = setInterval(() => setTickIdx(i => (i + 1) % TICKER.length), 2400);
     return () => clearInterval(timer);
@@ -26,67 +34,85 @@ export function HeroSection() {
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
 
-    // Ambient random floating physics
-    gsap.to(icon1.current, {
-      y: "random(-40,40)", x: "random(-30,30)", rotation: "random(-20,20)",
-      duration: 8, repeat: -1, yoyo: true, ease: "sine.inOut",
-    });
-    gsap.to(icon2.current, {
-      y: "random(-40,40)", x: "random(-30,30)", rotation: "random(-20,20)",
-      duration: 9, repeat: -1, yoyo: true, ease: "sine.inOut",
-    });
-    gsap.to(icon3.current, {
-      y: "random(-40,40)", x: "random(-30,30)", rotation: "random(-20,20)",
-      duration: 7, repeat: -1, yoyo: true, ease: "sine.inOut",
-    });
-
-    // Morphing scroll glass card
-    gsap.to(cardRef.current, {
-      paddingTop: "1rem", paddingBottom: "1rem",
-      borderRadius: "9999px", width: "90%",
-      backgroundColor: "rgba(1, 43, 57, 0.02)",
-      borderColor: "rgba(0, 237, 100, 0.35)",
-      boxShadow: "0 0 50px rgba(0,237,100,0.12), inset 0 0 20px rgba(0,237,100,0.04)",
-      scrollTrigger: { trigger: containerRef.current, start: "top top", end: "+=220", scrub: 1.2 },
+    // Parallax the isometric grid background on Y-axis as user scrolls
+    gsap.to(gridRef.current, {
+      backgroundPositionY: "40%",
+      ease: "none",
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
     });
   }, { scope: containerRef });
 
   return (
-    <div ref={containerRef} className="relative w-full min-h-[65vh] flex flex-col items-center justify-center overflow-hidden border-b border-white/5 bg-[#001E2B] pt-20 pb-16">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#012B39] via-[#001E2B] to-[#001E2B]" />
+    <div ref={containerRef} className="relative w-full min-h-[70vh] flex flex-col items-center justify-center overflow-hidden border-b border-white/5 bg-[#001E2B] pt-24 pb-20">
 
-      {/* Ambient background icons */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div ref={icon1} className="absolute top-[15%] left-[12%] opacity-[0.18]">
-          <BookOpen className="w-28 h-28 text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]" />
-        </div>
-        <div ref={icon2} className="absolute bottom-[18%] right-[12%] opacity-[0.18]">
-          <PenTool className="w-36 h-36 text-[#00ED64] drop-shadow-[0_0_20px_rgba(0,237,100,0.4)]" />
-        </div>
-        <div ref={icon3} className="absolute top-[35%] right-[22%] opacity-[0.15]">
-          <GraduationCap className="w-24 h-24 text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.4)]" />
-        </div>
+      {/* SVG Isometric Grid Background */}
+      <div
+        ref={gridRef}
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{
+          backgroundImage: GRID_URI,
+          backgroundSize: "80px 80px",
+          backgroundPosition: "center 0%",
+        }}
+      />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(0,30,43,0)_0%,_rgba(0,30,43,0.9)_80%)] z-[1] pointer-events-none" />
+
+      {/* Floating 3D SVGs with Framer Motion */}
+      <div className="absolute inset-0 pointer-events-none z-[2]">
+        <FloatingSVG 
+          delay={0} 
+          className="top-[15%] left-[8%]" 
+          color="#00ED64" 
+          svg={<rect width="100" height="100" rx="20" transform="rotate(45 50 50)" fill="none" stroke="currentColor" strokeWidth="2" />}
+        />
+        <FloatingSVG 
+          delay={2} 
+          className="bottom-[20%] right-[10%]" 
+          color="#FFD700" 
+          svg={<path d="M50 10 L90 90 L10 90 Z" fill="none" stroke="currentColor" strokeWidth="2" />}
+        />
+        <FloatingSVG 
+          delay={1} 
+          className="top-[40%] right-[15%]" 
+          color="#FFFFFF" 
+          svg={<circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="10 5" />}
+        />
+        <FloatingSVG 
+          delay={3} 
+          className="bottom-[15%] left-[18%]" 
+          color="#00ED64" 
+          svg={
+            <g fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect x="20" y="20" width="60" height="60" rx="8" />
+              <path d="M20 40 H80 M20 60 H80 M40 20 V80 M60 20 V80" strokeOpacity="0.3" />
+            </g>
+          }
+        />
       </div>
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 flex flex-col items-center">
-        <div
-          ref={cardRef}
-          className="relative w-full rounded-[3rem] p-10 md:p-16 border border-white/5 backdrop-blur-2xl text-center flex flex-col items-center"
-          style={{ backgroundColor: "rgba(1, 43, 57, 0.6)", boxShadow: "0 20px 60px rgba(0,0,0,0.5)" }}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="flex flex-col items-center text-center"
         >
-          {/* Main headline */}
           <h1 className="bg-gradient-to-r from-yellow-400 via-green-400 to-[#00ED64] text-transparent bg-clip-text font-black text-7xl md:text-9xl uppercase leading-none pb-2">
             Eduplus Kerala
           </h1>
 
-          {/* Y-Axis Slot Machine */}
           <div className="h-[44px] overflow-hidden relative flex items-center justify-center w-full mt-5">
             <AnimatePresence mode="popLayout">
               <motion.p
                 key={tickIdx}
                 initial={{ y: "100%", opacity: 0 }}
                 animate={{ y: "0%",   opacity: 1 }}
-                exit={{ y: "-100%",  opacity: 0 }}
+                exit={{ y: "-100%",   opacity: 0 }}
                 transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
                 className="absolute text-[#00ED64] font-black text-lg md:text-2xl tracking-[0.2em] uppercase"
                 style={{ textShadow: "0 0 15px rgba(0,237,100,0.5)" }}
@@ -95,8 +121,41 @@ export function HeroSection() {
               </motion.p>
             </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
+  );
+}
+
+function FloatingSVG({ delay, className, color, svg }: { delay: number; className: string; color: string; svg: React.ReactNode }) {
+  return (
+    <motion.div
+      className={`absolute ${className} opacity-20`}
+      style={{ color }}
+      initial={{ x: 0, y: 0, rotate: 0 }}
+      animate={{ 
+        y: [0, -40, 0, 40, 0], 
+        x: [0, 30, 0, -30, 0],
+        rotate: [0, 15, 0, -15, 0]
+      }}
+      transition={{ 
+        duration: 12, 
+        repeat: Infinity, 
+        delay,
+        ease: "easeInOut" 
+      }}
+    >
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <defs>
+          <filter id={`glow-${delay}`} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="5" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
+        <g filter={`url(#glow-${delay})`}>
+          {svg}
+        </g>
+      </svg>
+    </motion.div>
   );
 }

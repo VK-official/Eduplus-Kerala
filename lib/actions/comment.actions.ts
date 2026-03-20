@@ -2,6 +2,7 @@
 
 import dbConnect from "../mongodb";
 import Comment from "../../models/Comment";
+import File from "../../models/File";
 import User from "../../models/User";
 import { getServerSession } from "next-auth/next";
 import { revalidatePath } from "next/cache";
@@ -19,14 +20,29 @@ export async function addComment(fileId: string, text: string) {
     const user = await User.findOne({ email: session.user.email }).lean();
     if (!user) throw new Error("User not found");
 
+    const userName = user.name || session.user.name || "Unknown User";
+    
     const newComment = await Comment.create({
       text,
       fileId,
       userId: user._id,
-      userName: user.name || session.user.name || "Unknown User",
+      userName,
     });
 
-    revalidatePath(`/file/${fileId}`);
+    // Sync with File embedded array for Teacher Dashboard
+    await File.findByIdAndUpdate(fileId, {
+      $push: { 
+        comments: { 
+          user: userName, 
+          text, 
+          createdAt: new Date(),
+          resolved: false
+        } 
+      }
+    });
+
+    revalidatePath(`/vault/${fileId}`);
+    revalidatePath("/dashboard");
     return JSON.parse(JSON.stringify(newComment));
   } catch (error: any) {
     console.error("Error adding comment:", error);

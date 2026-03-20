@@ -5,21 +5,11 @@ import { Search, Filter } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { CustomSelect } from "./CustomSelect";
 
-const ACADEMIC_MAP: Record<string, string[]> = {
-  "LP":  ["Malayalam", "English", "EVS", "Mathematics"],
-  "UP":  ["Malayalam", "English", "Hindi", "Basic Science", "Social Science", "Mathematics"],
-  "HS":  ["Malayalam", "English", "Hindi", "Physics", "Chemistry", "Biology", "Social Science", "Mathematics", "IT"],
-  "HSS": ["Physics", "Chemistry", "Biology", "Mathematics", "Computer Science", "Accountancy", "Economics", "Business Studies", "Political Science", "History"],
-};
+import { ACADEMIC_MAP, CLASS_LIST } from "../lib/utils/constants";
 
 function getSubjectsForClassNum(classNum: string): string[] {
-  if (classNum === "All") return Array.from(new Set(Object.values(ACADEMIC_MAP).flat()));
-  const num = Number(classNum);
-  if (num >= 1  && num <= 4)  return ACADEMIC_MAP["LP"];
-  if (num >= 5  && num <= 7)  return ACADEMIC_MAP["UP"];
-  if (num >= 8  && num <= 10) return ACADEMIC_MAP["HS"];
-  if (num >= 11 && num <= 12) return ACADEMIC_MAP["HSS"];
-  return [];
+  if (classNum === "All") return Array.from(new Set(Object.keys(ACADEMIC_MAP).flatMap(c => Object.keys(ACADEMIC_MAP[c]))));
+  return Object.keys(ACADEMIC_MAP[classNum] || {});
 }
 
 export function SidebarFilter() {
@@ -59,7 +49,7 @@ export function SidebarFilter() {
     return () => clearTimeout(timer);
   }, [query, classNum, subject, pushFilters]);
 
-  const classOptions   = ["All Classes", ...Array.from({ length: 12 }, (_, i) => `Class ${i + 1}`)];
+  const classOptions   = ["All Classes", ...CLASS_LIST.map(c => `Class ${c}`)];
   const subjectOptions = ["All Subjects", ...availableSubjects];
   const displayClass   = classNum  === "All" ? "All Classes"  : `Class ${classNum}`;
   const displaySubject = subject   === "All" ? "All Subjects" : subject;

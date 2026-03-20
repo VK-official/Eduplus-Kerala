@@ -14,29 +14,29 @@ const EXAM_SPOTLIGHT = [
     items: ["Model Question Papers", "Previous Year Papers", "Special Revision Notes", "Chapter-wise Summaries"],
   },
   {
-    label: "Plus One (+1)",
-    grade: "Class 11",
-    icon: TrendingUp,
+    label: "HS Revision",
+    grade: "Class 8-9",
+    icon: BookOpen,
     color: "from-purple-500/20 to-purple-600/5",
     border: "border-purple-500/20",
     iconColor: "text-purple-400",
-    items: ["Science Group Materials", "Commerce Group Notes", "Humanities Resources", "First Year Guides"],
+    items: ["Terminal Exam Notes", "Important Questions", "Subject Guides", "Practical Tips"],
   },
   {
-    label: "Plus Two (+2)",
-    grade: "Class 12",
+    label: "UP Foundation",
+    grade: "Class 5-7",
     icon: Trophy,
     color: "from-yellow-500/20 to-yellow-600/5",
     border: "border-yellow-500/20",
     iconColor: "text-yellow-400",
-    items: ["Board Exam Model Papers", "Revision Worksheets", "Important Concepts", "Last Minute Notes"],
+    items: ["Basic Science Notes", "Maths Worksheets", "Language Guides", "Skill Development"],
   },
 ];
 
 const TOP_MATERIALS = [
   { rank: 1, title: "Class 10 Physics – Motion & Laws", subject: "Physics", class: 10, downloads: "4.2k" },
-  { rank: 2, title: "Class 12 Chemistry – Organic Summary",  subject: "Chemistry", class: 12, downloads: "3.8k" },
-  { rank: 3, title: "Class 9 Maths – Coordinate Geometry", subject: "Mathematics", class: 9,  downloads: "3.1k" },
+  { rank: 2, title: "Class 9 Maths – Coordinate Geometry", subject: "Mathematics", class: 9,  downloads: "3.1k" },
+  { rank: 3, title: "Class 8 Basic Science – Cell Biology", subject: "Biology", class: 8,  downloads: "2.5k" },
 ];
 
 export default function HomePage() {
@@ -102,7 +102,7 @@ export default function HomePage() {
             </p>
             <div className="mt-12 flex items-center gap-8 flex-wrap">
               <div className="text-center">
-                <div className="text-4xl font-black text-[#00ED64]">12</div>
+                <div className="text-4xl font-black text-[#00ED64]">6</div>
                 <div className="text-slate-400 text-sm uppercase tracking-widest mt-1">Classes Covered</div>
               </div>
               <div className="w-px h-12 bg-white/10"></div>

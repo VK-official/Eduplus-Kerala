@@ -4,20 +4,23 @@ import GoogleProvider from "next-auth/providers/google";
 export const authOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientId:     process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+  // Silence high-verbosity _log POST loop that floods the terminal
+  logger: {
+    error: () => {},
+    warn:  () => {},
+    debug: () => {},
+  },
   callbacks: {
     async session({ session, token }: any) {
-      if (session.user) {
-        session.user.id = token.sub;
-      }
+      if (session.user) session.user.id = token.sub;
       return session;
     },
   },
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };

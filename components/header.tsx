@@ -12,7 +12,7 @@ export function Header() {
   const borderRadius = useTransform(scrollY, [0, 60], ["0rem",       "9999px"]);
   const marginTop    = useTransform(scrollY, [0, 60], ["0rem",       "1rem"]);
   const marginX      = useTransform(scrollY, [0, 60], ["0rem",       "1.5rem"]);
-  const borderColor  = useTransform(scrollY, [0, 60], ["rgba(0,237,100,0.2)", "transparent"]);
+  const borderColor  = useTransform(scrollY, [0, 60], ["rgba(0,237,100,0.2)", "rgba(0,0,0,0)"]);
 
   return (
     <div className="fixed top-0 inset-x-0 z-50 pointer-events-none">
@@ -32,7 +32,8 @@ export function Header() {
         {/* Animated SVG Logo — ECG line morphing to "E" */}
         <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="2" width="32" height="32" rx="9" stroke="#00ED64" strokeWidth="1.5" fill="transparent" />
+            <rect x="2" y="2" width="32" height="32" rx="9" stroke="#00ED64" strokeWidth="1.5" fill="none" />
+
             <path
               d="M6 18 L11 18 L14 10 L18 26 L22 14 L25 18 L30 18"
               stroke="#00ED64"
