@@ -1,32 +1,46 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, Book, BookOpen, User, Calendar, X } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { CustomSelect } from "./CustomSelect";
 
 import { ACADEMIC_MAP, CLASS_LIST } from "../lib/utils/constants";
 
 function getSubjectsForClassNum(classNum: string): string[] {
-  if (classNum === "All") return Array.from(new Set(Object.keys(ACADEMIC_MAP).flatMap(c => Object.keys(ACADEMIC_MAP[c]))));
-  return Object.keys(ACADEMIC_MAP[classNum] || {});
+  if (classNum === "All") {
+    const all = Object.values(ACADEMIC_MAP).flatMap(c => Object.keys(c));
+    return Array.from(new Set(all));
+  }
+  const cls = ACADEMIC_MAP[classNum];
+  return cls ? Object.keys(cls) : [];
 }
 
-export function SidebarFilter() {
+interface SidebarFilterProps {
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+  classNum: string;
+  setClassNum: (c: string) => void;
+  subject: string;
+  setSubject: (s: string) => void;
+}
+
+export function SidebarFilter({
+  searchQuery,
+  setSearchQuery,
+  classNum,
+  setClassNum,
+  subject,
+  setSubject,
+}: SidebarFilterProps) {
   const router       = useRouter();
   const searchParams = useSearchParams();
 
-  // Local state — never caused by router.push
-  const [query,    setQuery]    = useState(searchParams.get("q")       || "");
-  const [classNum, setClassNum] = useState(searchParams.get("class")   || "All");
-  const [subject,  setSubject]  = useState(searchParams.get("subject") || "All");
-
-  const [availableSubjects, setAvailableSubjects] = useState<string[]>(getSubjectsForClassNum(classNum));
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   // Update subjects silently when class changes — no router interaction
   useEffect(() => {
     const subjects = getSubjectsForClassNum(classNum);
-    setAvailableSubjects(subjects);
     // Only reset subject if it's no longer valid for the new class
     if (subject !== "All" && !subjects.includes(subject)) {
       setSubject("All");
@@ -45,12 +59,13 @@ export function SidebarFilter() {
   }, [router]);
 
   useEffect(() => {
-    const timer = setTimeout(() => pushFilters(query, classNum, subject), 400);
+    const timer = setTimeout(() => pushFilters(searchQuery, classNum, subject), 400);
     return () => clearTimeout(timer);
-  }, [query, classNum, subject, pushFilters]);
+  }, [searchQuery, classNum, subject, pushFilters]);
 
   const classOptions   = ["All Classes", ...CLASS_LIST.map(c => `Class ${c}`)];
-  const subjectOptions = ["All Subjects", ...availableSubjects];
+  const subjectsForClass = classNum !== "All" ? ACADEMIC_MAP[classNum] || {} : {};
+  const subjectOptions = ["All Subjects", ...Object.keys(subjectsForClass)];
   const displayClass   = classNum  === "All" ? "All Classes"  : `Class ${classNum}`;
   const displaySubject = subject   === "All" ? "All Subjects" : subject;
 
@@ -91,8 +106,8 @@ export function SidebarFilter() {
             <Search className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" />
             <input
               type="text"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
               placeholder="e.g. Gravity..."
               className="w-full bg-[#001E2B] border border-gray-700 rounded-lg p-3 pl-11 text-slate-200 placeholder:text-slate-600 focus:border-[#00ED64] outline-none transition-colors"
             />

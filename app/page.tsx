@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HeroSection } from "../components/HeroSection";
 import { PageWrapper } from "../components/PageWrapper";
 import { BookOpen, Trophy, Star, TrendingUp, Users, Target } from "lucide-react";
+import { getTopResources } from "../lib/actions/fetch.actions";
 
 const EXAM_SPOTLIGHT = [
   {
@@ -33,13 +34,8 @@ const EXAM_SPOTLIGHT = [
   },
 ];
 
-const TOP_MATERIALS = [
-  { rank: 1, title: "Class 10 Physics – Motion & Laws", subject: "Physics", class: 10, downloads: "4.2k" },
-  { rank: 2, title: "Class 9 Maths – Coordinate Geometry", subject: "Mathematics", class: 9,  downloads: "3.1k" },
-  { rank: 3, title: "Class 8 Basic Science – Cell Biology", subject: "Biology", class: 8,  downloads: "2.5k" },
-];
-
-export default function HomePage() {
+export default async function HomePage() {
+  const topResources = await getTopResources(5);
   return (
     <PageWrapper>
       <div className="w-full bg-[#001E2B]">
@@ -142,24 +138,32 @@ export default function HomePage() {
             </div>
 
             <div className="divide-y divide-white/5">
-              {TOP_MATERIALS.map((mat) => (
-                <div key={mat.rank} className="flex items-center gap-6 px-6 py-5 hover:bg-white/[0.03] transition-colors group">
-                  <span className="text-3xl font-black text-slate-700 w-8 text-center group-hover:text-[#00ED64] transition-colors">
-                    {mat.rank}
-                  </span>
-                  <div className="p-3 bg-[#00ED64]/8 rounded-xl">
-                    <BookOpen className="h-5 w-5 text-[#00ED64]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white font-bold truncate">{mat.title}</p>
-                    <p className="text-slate-500 text-sm uppercase tracking-wider font-semibold mt-0.5">{mat.subject} · Class {mat.class}</p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-slate-400 text-sm font-bold shrink-0">
-                    <Star className="h-4 w-4 text-yellow-500" />
-                    {mat.downloads}
-                  </div>
+              {topResources.length === 0 ? (
+                <div className="px-6 py-12 text-center text-slate-600 font-medium">
+                  Gathering weekly ranking data...
                 </div>
-              ))}
+              ) : (
+                topResources.map((mat: any, idx: number) => (
+                  <Link key={mat._id} href={`/vault/${mat._id}`}>
+                    <div className="flex items-center gap-6 px-6 py-5 hover:bg-white/[0.03] transition-colors group cursor-pointer">
+                      <span className="text-3xl font-black text-slate-700 w-8 text-center group-hover:text-[#00ED64] transition-colors">
+                        {idx + 1}
+                      </span>
+                      <div className="p-3 bg-[#00ED64]/10 rounded-xl group-hover:bg-[#00ED64]/20 transition-colors">
+                        <BookOpen className="h-5 w-5 text-[#00ED64]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-bold truncate group-hover:text-[#00ED64] transition-colors">{mat.title}</p>
+                        <p className="text-slate-500 text-sm uppercase tracking-wider font-semibold mt-0.5">{mat.subject} · Class {mat.class}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-slate-400 text-sm font-bold shrink-0">
+                        <Star className="h-4 w-4 text-yellow-500" />
+                        {mat.ratingCount > 0 ? (mat.totalStars / mat.ratingCount).toFixed(1) : "0.0"}
+                      </div>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
 
             <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between">

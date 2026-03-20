@@ -137,3 +137,29 @@ export async function deleteFile(fileId: string) {
     throw new Error(error.message);
   }
 }
+
+export async function getAllFilesForSitemap() {
+  try {
+    await dbConnect();
+    const files = await File.find({}, "_id updatedAt").lean();
+    return JSON.parse(JSON.stringify(files));
+  } catch (error) {
+    console.error("Error fetching files for sitemap:", error);
+    return [];
+  }
+}
+
+export async function getTopResources(limit: number = 5) {
+  try {
+    await dbConnect();
+    // Get top files by ratingCount or totalStars
+    const files = await File.find({})
+      .sort({ totalStars: -1, ratingCount: -1 })
+      .limit(limit)
+      .lean();
+    return JSON.parse(JSON.stringify(files));
+  } catch (error) {
+    console.error("Error fetching top resources:", error);
+    return [];
+  }
+}
