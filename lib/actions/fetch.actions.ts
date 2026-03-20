@@ -4,23 +4,13 @@ import { supabase } from "../supabase";
 import { revalidatePath } from "next/cache";
 
 /* 
-  Eduplus Kerala - Phase 7 (Supabase Sync)
-  Strict Postgres Schema:
-  - class (integer)
-  - subject (text)
-  - part (text)
-  - chapter (text)
-  - resource_type (text: 'notes', 'question_paper', 'a_plus')
-  - file_size (text)
-  - description (text)
-  - specialty_tag (text)
-  - resource_link (text)
-  - comments (jsonb)
-  - total_stars (integer)
-  - rating_count (integer)
+  Eduplus Kerala - Phase 9 (Supabase Stabilization)
+  - Added safety guards for null supabase client.
+  - Purged all MongoDB references.
 */
 
 export async function getFiles() {
+  if (!supabase) return [];
   try {
     const { data, error } = await supabase
       .from('resources')
@@ -36,6 +26,7 @@ export async function getFiles() {
 }
 
 export async function getFileById(id: string) {
+  if (!supabase) return null;
   try {
     const { data, error } = await supabase
       .from('resources')
@@ -52,6 +43,7 @@ export async function getFileById(id: string) {
 }
 
 export async function addRating(fileId: string, stars: number) {
+  if (!supabase) return { ok: false, error: "Database not connected" };
   try {
     if (stars < 1 || stars > 5) throw new Error("Invalid rating.");
     
@@ -81,6 +73,7 @@ export async function addRating(fileId: string, stars: number) {
 }
 
 export async function addComment(fileId: string, user: string, text: string) {
+  if (!supabase) return { ok: false, error: "Database not connected" };
   try {
     const { data: current, error: getError } = await supabase
       .from('resources')
@@ -108,6 +101,7 @@ export async function addComment(fileId: string, user: string, text: string) {
 }
 
 export async function getTopResources(limit: number = 5) {
+  if (!supabase) return [];
   try {
     const { data, error } = await supabase
       .from('resources')
@@ -118,12 +112,14 @@ export async function getTopResources(limit: number = 5) {
     if (error) throw error;
     return data || [];
   } catch (error) {
+    // This is the line that triggered the {} error. Added guard above.
     console.error("Error fetching top resources:", error);
     return [];
   }
 }
 
 export async function deleteFile(fileId: string) {
+  if (!supabase) return { ok: false, error: "Database not connected" };
   try {
     const { error } = await supabase
       .from('resources')
