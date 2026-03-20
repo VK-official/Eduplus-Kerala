@@ -144,7 +144,7 @@ export default async function HomePage() {
                 </div>
               ) : (
                 topResources.map((mat: any, idx: number) => (
-                  <Link key={mat._id} href={`/vault/${mat._id}`}>
+                  <Link key={mat.id} href={`/vault/${mat.id}`}>
                     <div className="flex items-center gap-6 px-6 py-5 hover:bg-white/[0.03] transition-colors group cursor-pointer">
                       <span className="text-3xl font-black text-slate-700 w-8 text-center group-hover:text-[#00ED64] transition-colors">
                         {idx + 1}
@@ -158,7 +158,7 @@ export default async function HomePage() {
                       </div>
                       <div className="flex items-center gap-1.5 text-slate-400 text-sm font-bold shrink-0">
                         <Star className="h-4 w-4 text-yellow-500" />
-                        {mat.ratingCount > 0 ? (mat.totalStars / mat.ratingCount).toFixed(1) : "0.0"}
+                        {mat.rating_count > 0 ? (mat.total_stars / mat.rating_count).toFixed(1) : "0.0"}
                       </div>
                     </div>
                   </Link>

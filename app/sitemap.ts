@@ -7,8 +7,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const files = await getAllFilesForSitemap();
   
   const resourceEntries = files.map((file: any) => ({
-    url: `${baseUrl}/vault/${file._id}`,
-    lastModified: new Date(file.updatedAt),
+    url: `${baseUrl}/vault/${file.id}`,
+    lastModified: new Date(file.updated_at || new Date()),
     changeFrequency: 'monthly' as const,
     priority: 0.7,
   }));

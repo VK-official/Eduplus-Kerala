@@ -35,16 +35,16 @@ export function VaultGrid({ files }: { files: any[] }) {
         const isFeatured = index === 0;
         return (
           <div
-            key={file._id}
+            key={file.id}
             className={`file-card-wrapper ${isFeatured ? "md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" : "col-span-1 xl:col-span-2"}`}
           >
             <FileCard
-              id={file._id}
+              id={file.id}
               title={file.title}
               subject={file.subject}
               classNum={file.class}
-              type={file.type}
-              driveUrl={file.driveUrl}
+              type={file.resource_type}
+              driveUrl={file.resource_link}
               featured={isFeatured}
             />
           </div>

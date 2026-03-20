@@ -175,7 +175,6 @@ export async function addResource(data: any) {
 export async function getTeacherFilesWithComments() {
   if (!supabase) return [];
   try {
-    // For now, get all files since we don't have user roles fully wired to Supabase yet
     const { data, error } = await supabase
       .from('resources')
       .select('*')
@@ -188,3 +187,83 @@ export async function getTeacherFilesWithComments() {
     return [];
   }
 }
+
+export const incrementDownload = async (id: string) => {
+  if (!supabase) return;
+  try {
+    const { data: current, error: getError } = await supabase
+      .from('resources')
+      .select('downloads')
+      .eq('id', id)
+      .single();
+
+    if (getError) throw getError;
+
+    await supabase
+      .from('resources')
+      .update({ downloads: (current.downloads || 0) + 1 })
+      .eq('id', id);
+  } catch (error) {
+    console.error("Error incrementing download:", error);
+  }
+};
+
+export const getAllFilesForSitemap = async () => {
+  if (!supabase) return [];
+  try {
+    const { data, error } = await supabase
+      .from('resources')
+      .select('id, updated_at');
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching sitemap IDs:", error);
+    return [];
+  }
+};
+
+export const updateCommentStatus = async (resourceId: string, commentIndex: number, status: string) => {
+  if (!supabase) return;
+  try {
+    const { data: current, error: getError } = await supabase
+      .from('resources')
+      .select('comments')
+      .eq('id', resourceId)
+      .single();
+
+    if (getError) throw getError;
+
+    const comments = [...(current.comments || [])];
+    if (comments[commentIndex]) {
+      comments[commentIndex].status = status;
+      comments[commentIndex].resolved = status === 'resolved';
+    }
+
+    await supabase
+      .from('resources')
+      .update({ comments })
+      .eq('id', resourceId);
+
+    revalidatePath(`/vault/${resourceId}`);
+  } catch (error) {
+    console.error("Error updating comment status:", error);
+  }
+};
+
+export const getTrendingFiles = async (limit: number = 5) => {
+  if (!supabase) return [];
+  try {
+    const { data, error } = await supabase
+      .from('resources')
+      .select('*')
+      .order('downloads', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching trending files:", error);
+    return [];
+  }
+};
