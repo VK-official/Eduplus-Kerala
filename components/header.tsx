@@ -12,8 +12,8 @@ export function Header() {
 
   useEffect(() => {
     // Initial fetch
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
+    supabase.auth.getUser().then((res) => {
+      setUser(res.data.user);
     });
 
     // Real-time listener
