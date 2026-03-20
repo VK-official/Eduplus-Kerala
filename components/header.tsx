@@ -11,13 +11,14 @@ export function Header() {
   const { scrollY } = useScroll();
 
   useEffect(() => {
-    // Initial fetch
-    supabase.auth.getUser().then((res) => {
-      setUser(res.data.user);
-    });
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+    };
+    checkUser();
 
     // Real-time listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: string, session: any) => {
       setUser(session?.user ?? null);
     });
 
