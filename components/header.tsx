@@ -79,30 +79,19 @@ export function Header() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-4">
-          {user ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="px-6 py-2 rounded-full bg-white/5 text-white text-sm font-bold hover:bg-white/10 transition-colors uppercase tracking-widest"
-              >
-                Dashboard
-              </Link>
-              <button
-                onClick={handleSignOut}
-                className="px-6 py-2 rounded-full border border-white/10 text-slate-400 text-sm font-semibold hover:bg-white/5 transition-colors uppercase tracking-widest"
-              >
-                Sign Out
-              </button>
-            </>
-          ) : (
+        <div className="flex items-center gap-6">
+          <Link href="/vault" className="text-white/70 hover:text-[#00ED64] text-sm font-bold uppercase tracking-widest transition-colors">
+            Vault
+          </Link>
+          <Link href="/admin" className="text-white/70 hover:text-[#00ED64] text-sm font-bold uppercase tracking-widest transition-colors">
+            Admin
+          </Link>
+          {user && (
             <button
-              onClick={handleSignIn}
-              className="px-6 py-2 rounded-full bg-[#00ED64]/10 text-[#00ED64] border border-[#00ED64]/30 text-sm font-semibold hover:bg-[#00ED64]/20 transition-all font-black uppercase tracking-widest"
-              onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 0 20px rgba(0,237,100,0.3)")}
-              onMouseLeave={e => (e.currentTarget.style.boxShadow = "none")}
+              onClick={handleSignOut}
+              className="px-6 py-2 rounded-full border border-white/10 text-slate-400 text-sm font-semibold hover:bg-white/5 transition-colors uppercase tracking-widest"
             >
-              Sign In
+              Sign Out
             </button>
           )}
         </div>

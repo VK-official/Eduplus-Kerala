@@ -15,6 +15,17 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [uploaderEmail, setUploaderEmail] = useState("");
 
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUploaderEmail(user.email!);
+        setStep("verified");
+      }
+    };
+    checkSession();
+  }, []);
+
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true); setError(null);
@@ -72,6 +83,10 @@ export default function AdminPage() {
           className="w-full max-w-md bg-[#012B39]/60 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden"
         >
           <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#00ED64]/5 rounded-full blur-[80px]" />
+          
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 text-[10px] font-black text-[#00ED64] uppercase tracking-[0.3em] opacity-40">
+            DEBUG: Auth Status - {step === "verified" ? "VERIFIED" : "PENDING"}
+          </div>
           
           <div className="relative z-10 text-center mb-10">
             <div className="inline-block p-4 bg-[#00ED64]/10 rounded-3xl border border-[#00ED64]/20 mb-6">
