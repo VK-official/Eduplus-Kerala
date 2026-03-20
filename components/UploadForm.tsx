@@ -169,9 +169,19 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
           </div>
 
           <button type="submit" disabled={!canSubmit||loading}
-            className="w-full mt-10 py-5 rounded-[1.5rem] font-black text-lg uppercase tracking-[0.2em] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background:canSubmit?"#00ED64":"rgba(0,237,100,0.15)", color:canSubmit?"#012B39":"#00ED64", boxShadow:canSubmit?"0 0 40px rgba(0,237,100,0.3)":"none" }}>
-            {loading?"Verifying Threat Signature...":"Deploy to Vault"}
+            className="w-full mt-10 py-5 rounded-[1.5rem] font-black text-lg uppercase tracking-[0.2em] transition-all disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
+            style={{ 
+              background: canSubmit ? "#00ED64" : "rgba(0,237,100,0.1)", 
+              color: canSubmit ? "#012B39" : "#00ED64", 
+              border: canSubmit ? "none" : "1px solid rgba(0,237,100,0.3)",
+              boxShadow: canSubmit ? "0 0 40px rgba(0,237,100,0.3)" : "none" 
+            }}>
+            {loading ? (
+              <div className="flex items-center justify-center gap-3">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span>Verifying Threat Signature...</span>
+              </div>
+            ) : "Deploy to Vault"}
           </button>
         </div>
       </form>

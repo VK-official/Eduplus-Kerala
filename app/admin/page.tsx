@@ -17,9 +17,9 @@ export default function AdminPage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUploaderEmail(user.email!);
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUploaderEmail(data.user.email!);
         setStep("verified");
       }
     };
@@ -46,7 +46,7 @@ export default function AdminPage() {
     try {
       const { data, error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
       if (error) throw error;
-      if (data.user) {
+      if (data?.user) {
         setUploaderEmail(data.user.email!);
         setStep("verified");
       }
@@ -60,6 +60,9 @@ export default function AdminPage() {
   if (step === "verified") {
     return (
       <PageWrapper>
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 text-[10px] font-black text-[#00ED64] uppercase tracking-[0.3em] opacity-40 z-50">
+          DEBUG: Auth Status - VERIFIED
+        </div>
         <div className="min-h-screen bg-[#001E2B] pt-12 pb-32">
           <div className="max-w-4xl mx-auto px-4">
             <div className="flex items-center gap-3 mb-8 px-6 py-3 rounded-full bg-[#00ED64]/10 border border-[#00ED64]/20 w-fit">
@@ -85,7 +88,7 @@ export default function AdminPage() {
           <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#00ED64]/5 rounded-full blur-[80px]" />
           
           <div className="absolute top-4 left-1/2 -translate-x-1/2 text-[10px] font-black text-[#00ED64] uppercase tracking-[0.3em] opacity-40">
-            DEBUG: Auth Status - {step === "verified" ? "VERIFIED" : "PENDING"}
+            DEBUG: Auth Status - PENDING
           </div>
           
           <div className="relative z-10 text-center mb-10">
