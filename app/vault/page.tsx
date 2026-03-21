@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { getFiles } from "../../lib/actions/fetch.actions";
-import { BookOpen, FileText, Smile } from "lucide-react";
 import { VaultContent } from "../../components/VaultContent";
 import { PageWrapper } from "../../components/PageWrapper";
 
@@ -27,22 +25,7 @@ export default async function VaultPage() {
             </div>
 
             <div className="flex flex-col items-center md:items-end gap-6">
-              {/* Teacher-to-Student SVG Story - v54.0 Visual Blueprint */}
-              <div className="hidden md:flex items-center gap-4 px-6 py-3 bg-[#012B39]/50 rounded-full border border-white/5 backdrop-blur-md">
-                <BookOpen className="text-[#00ED64] w-5 h-5 animate-pulse" />
-                <div className="relative w-20 h-[1px] bg-slate-800 flex items-center">
-                  <motion.div
-                    animate={{ x: [0, 80], opacity: [0, 1, 1, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute"
-                  >
-                    <FileText className="text-white w-3 h-3" />
-                  </motion.div>
-                </div>
-                <Smile className="text-[#eab308] w-5 h-5 drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]" />
-              </div>
-
-              {/* Glowing Aura Button - v54.0 Premium UX */}
+              {/* Glowing Aura Button - v54.1 Pure CSS High-Performance */}
               <Link 
                 href="/admin" 
                 className="relative inline-flex h-12 items-center justify-center overflow-hidden rounded-full bg-[#001E2B] px-10 font-black text-white border border-[#00ED64]/50 shadow-[0_0_15px_rgba(0,237,100,0.4)] transition-all hover:shadow-[0_0_30px_rgba(255,255,0,0.6)] group"
