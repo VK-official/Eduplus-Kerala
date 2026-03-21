@@ -254,7 +254,7 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
   );
 }
 
-const I = "w-full bg-[#001E2B]/50 border border-white/10 rounded-2xl p-4 text-white placeholder:text-slate-700 focus:border-[#00ED64] outline-none transition-all text-sm font-bold uppercase tracking-wider";
+const I = "w-full bg-[#001E2B]/50 border border-white/10 rounded-2xl p-4 text-white placeholder:text-slate-700 focus:border-[#00ED64] outline-none transition-all text-sm font-bold tracking-wider";
 function F({ label, children, span=1 }: { label:string; children:React.ReactNode; span?:1|2 }) {
   return <div className={span===2?"md:col-span-2":""}><label className="block text-[10px] font-black text-slate-600 uppercase tracking-[0.25em] mb-3 ml-1">{label}</label>{children}</div>;
 }
