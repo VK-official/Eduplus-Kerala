@@ -18,6 +18,7 @@ export default function AdminPage() {
   const [step, setStep] = useState<"email" | "otp" | "verified">("email");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [uploaderEmail, setUploaderEmail] = useState("");
 
   useEffect(() => {
@@ -46,10 +47,15 @@ export default function AdminPage() {
           shouldCreateUser: false // Teacher must already exist or be invited
         }
       });
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase OTP Error:", error.message);
+        setErrorMsg(error.message);
+        return;
+      }
+      setErrorMsg(null);
       setStep("otp");
     } catch (err: any) {
-      setError(err.message);
+      setErrorMsg(err.message);
     } finally {
       setLoading(false);
     }
@@ -158,6 +164,11 @@ export default function AdminPage() {
                 >
                   {loading ? <Loader2 className="h-5 w-5 animate-spin"/> : "Request 8-Digit Code"}
                 </button>
+                {errorMsg && (
+                  <p className="text-red-500 text-xs font-bold mt-4 border border-red-500/20 p-4 rounded-2xl bg-red-500/5 text-center leading-relaxed">
+                    {errorMsg}
+                  </p>
+                )}
                 <p className="text-center text-[10px] text-slate-500 font-bold leading-relaxed uppercase tracking-wider">
                   By requesting a secure login code, you agree to our <a href='/terms' className='underline text-[#00ED64] hover:text-white'>Terms & Conditions</a> and <a href='/privacy' className='underline text-[#00ED64] hover:text-white'>Privacy Policy</a>.
                 </p>

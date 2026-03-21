@@ -25,13 +25,15 @@ export default async function VaultPage() {
             </div>
 
             <div className="flex flex-col items-center md:items-end gap-6">
-              {/* Glowing Aura Button - v54.1 Pure CSS High-Performance */}
-              <Link 
-                href="/admin" 
-                className="relative inline-flex h-12 items-center justify-center overflow-hidden rounded-full bg-[#001E2B] px-10 font-black text-white border border-[#00ED64]/50 shadow-[0_0_15px_rgba(0,237,100,0.4)] transition-all hover:shadow-[0_0_30px_rgba(255,255,0,0.6)] group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-[#00ED64] via-[#eab308] to-[#00ED64] opacity-20 animate-[spin_4s_linear_infinite] blur-lg group-hover:opacity-40" />
-                <span className="relative z-10 uppercase text-xs tracking-[0.2em]">Contribute Files</span>
+              {/* Glowing Aura Button - v55.0 Solid Aura Design */}
+              <Link href="/admin" className="relative group inline-block w-full md:w-auto mt-4 md:mt-0">
+                {/* The Glowing Aura Behind */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-[#00ED64] via-[#eab308] to-[#00ED64] rounded-lg blur-md opacity-75 group-hover:opacity-100 transition duration-500 animate-pulse" />
+                
+                {/* The Solid Button In Front */}
+                <button className="relative w-full px-8 py-4 bg-[#00ED64] hover:bg-[#00c950] text-[#001E2B] font-black uppercase tracking-widest rounded-lg transition-all shadow-xl text-xs">
+                  CONTRIBUTE FILES
+                </button>
               </Link>
             </div>
           </div>
