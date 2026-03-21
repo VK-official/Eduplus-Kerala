@@ -139,8 +139,11 @@ export default function AdminPage() {
                   disabled={loading}
                   className="w-full py-4 rounded-2xl bg-[#00ED64] text-[#012B39] font-black uppercase tracking-widest hover:opacity-90 transition-all flex items-center justify-center gap-2"
                 >
-                  {loading ? <Loader2 className="h-5 w-5 animate-spin"/> : "Request 6-Digit Code"}
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin"/> : "Request 8-Digit Code"}
                 </button>
+                <p className="text-center text-[10px] text-slate-500 font-bold leading-relaxed uppercase tracking-wider">
+                  By requesting a secure login code, you agree to our <a href='/terms' className='underline text-[#00ED64] hover:text-white'>Terms & Conditions</a> and <a href='/privacy' className='underline text-[#00ED64] hover:text-white'>Privacy Policy</a>.
+                </p>
               </motion.form>
             ) : (
               <motion.form 
@@ -150,8 +153,8 @@ export default function AdminPage() {
                 <div className="relative">
                   <Key className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
                   <input 
-                    required type="text" maxLength={6} value={otp} onChange={e=>setOtp(e.target.value)}
-                    placeholder="ENTER 6-DIGIT CODE"
+                    required type="text" maxLength={8} value={otp} onChange={e=>setOtp(e.target.value)}
+                    placeholder="ENTER 8-DIGIT CODE"
                     className="w-full bg-[#001E2B] border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white placeholder:text-slate-600 focus:border-[#00ED64] outline-none transition-all font-bold text-sm tracking-widest"
                   />
                 </div>
