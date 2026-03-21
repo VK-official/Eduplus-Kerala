@@ -25,14 +25,14 @@ export default async function VaultPage() {
             </div>
 
             <div className="flex flex-col items-center md:items-end gap-6">
-              {/* Glowing Aura Button - v55.0 Solid Aura Design */}
-              <Link href="/admin" className="relative group inline-block w-full md:w-auto mt-4 md:mt-0">
-                {/* The Glowing Aura Behind */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-[#00ED64] via-[#eab308] to-[#00ED64] rounded-lg blur-md opacity-75 group-hover:opacity-100 transition duration-500 animate-pulse" />
+              {/* Supreme Vault Button - v56.0 High-Contrast Entry Point */}
+              <Link href="/admin" className="relative group inline-block w-full lg:w-[480px] mt-8 md:mt-0">
+                {/* The Powerful Moving Aura */}
+                <div className="absolute -inset-2 bg-gradient-to-r from-[#00ED64] via-yellow-400 to-[#00ED64] rounded-2xl blur-xl opacity-80 group-hover:opacity-100 transition duration-700 animate-pulse" />
                 
-                {/* The Solid Button In Front */}
-                <button className="relative w-full px-8 py-4 bg-[#00ED64] hover:bg-[#00c950] text-[#001E2B] font-black uppercase tracking-widest rounded-lg transition-all shadow-xl text-xs">
-                  CONTRIBUTE FILES
+                {/* The Massive Solid Button */}
+                <button className="relative w-full px-12 py-10 bg-[#00ED64] hover:bg-[#00ff6e] text-[#001E2B] text-2xl md:text-3xl font-black uppercase tracking-tighter rounded-2xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-[0_20px_50px_rgba(0,237,100,0.3)]">
+                  CONTRIBUTE STUDY CONTENT FILE
                 </button>
               </Link>
             </div>
