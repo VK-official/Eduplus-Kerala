@@ -149,7 +149,7 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
               <CustomSelect options={DOC_TYPES.map(t=>DOC_LABELS[t])} value={DOC_LABELS[docType]}
                 onChange={(val: any)=>{const f=DOC_TYPES.find(t=>DOC_LABELS[t]===val);if(f)setDocType(f);}}/>
             </F>
-            <F label="Resource Brief" span={2}>
+            <F label="Resource Brief / Description (Optional)" span={2}>
               <textarea value={description} onChange={e=>setDescription(e.target.value)} rows={3} placeholder="DESCRIBE THE RESOURCE METHODOLOGY..." className={`${I} resize-none`}/>
             </F>
             <F label="Google Drive Link * (Must Be drive.google.com)" span={2}>
