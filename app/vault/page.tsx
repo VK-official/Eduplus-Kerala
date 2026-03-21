@@ -1,6 +1,14 @@
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { getFiles } from "../../lib/actions/fetch.actions";
 import { BookOpen, FileText, Smile } from "lucide-react";
+import { VaultContent } from "../../components/VaultContent";
+import { PageWrapper } from "../../components/PageWrapper";
+
+export const metadata = {
+  title: "Class Vault | Eduplus Kerala",
+  description: "Browse SCERT Kerala study materials by class and subject.",
+};
 
 export default async function VaultPage() {
   const allFiles = await getFiles();
