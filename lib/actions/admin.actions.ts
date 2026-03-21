@@ -39,7 +39,6 @@ export async function secureUploadHandler(data: any, uploaderEmail: string) {
           description: data.description,
           specialty_tag: data.specialty_tag,
           chapter: data.chapter,
-          file_size: data.file_size,
           uploader_name: data.uploader_name || "Guest Faculty",
           uploader_email: uploaderEmail, // STRATEGIC IDENTITY LOGGING
           created_at: new Date().toISOString(),

@@ -21,7 +21,6 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
   const [part,         setPart]         = useState("");
   const [chapter,      setChapter]      = useState("");
   const [format,       setFormat]       = useState<"PDF"|"MP4"|"MP3">("PDF");
-  const [fileSize,     setFileSize]     = useState("");
   const [specialtyTag, setSpecialtyTag] = useState("");
   const [docType,      setDocType]      = useState<"notes"|"question_paper"|"a_plus">("notes");
   const [title,        setTitle]        = useState("");
@@ -50,7 +49,11 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
   const subjects        = classNum ? getSubjectsForClass(classNum) : [];
   const parts           = (classNum && subject) ? getPartsForSubject(classNum, subject).map((p: any) => p.label) : [];
   const chapters        = (classNum && subject && part) ? getChaptersForPart(classNum, subject, part) : [];
-  const specialtyOptions = classNum ? getSpecialtyTags(classNum) : [];
+  let specialtyOptions = classNum ? getSpecialtyTags(classNum) : [];
+  if (subject === "IT") {
+    specialtyOptions = ["IT Practical", "IT Theory Notes"];
+    if (classNum === "10") specialtyOptions.push("IT Record Book Notes");
+  }
 
   const linkValidation = driveUrl ? validateResourceLink(driveUrl) : null;
   const linkError      = linkValidation && !linkValidation.valid ? linkValidation.reason : null;
@@ -70,13 +73,13 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
     try {
       const res = await secureUploadHandler({ 
         title, class: Number(classNum), subject, part, chapter, 
-        resource_type: docType, file_size: fileSize, specialty_tag: specialtyTag, 
+        resource_type: docType, specialty_tag: specialtyTag, 
         resource_link: driveUrl, description, uploader_name: uploaderName
       }, verifiedEmail);
 
       if (res.success) {
         setResult({ type: "success", msg: "LEGAL TRANSMISSION SUCCESSFUL. Identity Logged." });
-        setTitle(""); setFileSize(""); setDescription(""); setDriveUrl(""); setSpecialtyTag("");
+        setTitle(""); setDescription(""); setDriveUrl(""); setSpecialtyTag("");
         setShowLegalModal(false);
       } else {
         throw new Error(res.error);
@@ -142,9 +145,6 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
                 value={specialtyTag||(specialtyOptions.length?"Select Tag":"Select Class First")}
                 onChange={(val: any)=>{if(specialtyOptions.includes(val))setSpecialtyTag(val);}}/>
             </F>
-            <F label="Capacity Estimate (e.g. 12 MB)">
-              <input value={fileSize} onChange={e=>setFileSize(e.target.value)} placeholder="STORAGE WEIGHT" className={I}/></F>
-
             <F label="Material Category *" span={2}>
               <CustomSelect options={DOC_TYPES.map(t=>DOC_LABELS[t])} value={DOC_LABELS[docType]}
                 onChange={(val: any)=>{const f=DOC_TYPES.find(t=>DOC_LABELS[t]===val);if(f)setDocType(f);}}/>

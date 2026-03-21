@@ -71,7 +71,7 @@ export const ACADEMIC_MAP: Record<string, ClassData> = {
 export const CLASS_LIST = CLASSES.map(c => c.split(' ')[1]);
 
 export const SSLC_TAGS    = ["SSLC Notes", "SSLC Question Name", "SSLC Model Question Paper", "SSLC Special"];
-export const GENERAL_TAGS = ["Normal Text", "Model Question Papers", "Notes", "Previous Year Questions"];
+export const GENERAL_TAGS = ["Model Question Papers", "Notes", "Previous Year Questions"];
 
 export function getSpecialtyTags(classNum: string): string[] {
   return classNum === "10" ? SSLC_TAGS : GENERAL_TAGS;

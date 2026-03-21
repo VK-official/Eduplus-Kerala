@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { PageWrapper } from "../../components/PageWrapper";
 import { UploadForm } from "../../components/UploadForm";
 import { supabase } from "../../lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, Mail, Key, Loader2, AlertCircle } from "lucide-react";
+import { ShieldCheck, Mail, Key, Loader2, AlertCircle, LogOut } from "lucide-react";
 import { SuperAdminDashboard } from "../../components/SuperAdminDashboard";
 
 const SUPER_ADMIN_EMAIL = "edupluskerala90@gmail.com";
 
 export default function AdminPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"email" | "otp" | "verified">("email");
@@ -28,6 +30,11 @@ export default function AdminPage() {
     };
     checkSession();
   }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/vault");
+  };
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,11 +87,21 @@ export default function AdminPage() {
         </div>
         <div className="min-h-screen bg-[#001E2B] pt-12 pb-32">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
-            <div className="flex items-center gap-3 mb-12 px-6 py-3 rounded-full bg-[#00ED64]/10 border border-[#00ED64]/20 w-fit">
-              <ShieldCheck className="h-5 w-5 text-[#00ED64]" />
-              <span className="text-[#00ED64] text-xs font-black uppercase tracking-widest">
-                Authenticated: {uploaderEmail}
-              </span>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+              <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-[#00ED64]/10 border border-[#00ED64]/20 w-fit">
+                <ShieldCheck className="h-5 w-5 text-[#00ED64]" />
+                <span className="text-[#00ED64] text-xs font-black uppercase tracking-widest">
+                  Authenticated: {uploaderEmail}
+                </span>
+              </div>
+              
+              <button 
+                onClick={handleSignOut}
+                className="flex items-center gap-2 px-6 py-3 rounded-full border border-red-500/20 text-red-400 text-xs font-black uppercase tracking-widest hover:bg-red-500/10 transition-all"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Secure Sign Out</span>
+              </button>
             </div>
 
             {isSuperAdmin ? (

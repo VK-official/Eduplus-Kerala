@@ -6,9 +6,15 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { supabase } from "../lib/supabase";
 import { User } from "@supabase/supabase-js";
 
+import { usePathname } from "next/navigation";
+
 export function Header() {
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
+  const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
+  const isVault = pathname === "/vault";
+  const isAdmin = pathname === "/admin";
 
   useEffect(() => {
     const checkUser = async () => {
@@ -80,9 +86,11 @@ export function Header() {
         </Link>
 
         <div className="flex items-center gap-6">
-          <Link href="/vault" className="text-white/70 hover:text-[#00ED64] text-sm font-bold uppercase tracking-widest transition-colors">
-            Vault
-          </Link>
+          {!isAdmin && (
+            <Link href="/vault" className="text-white/70 hover:text-[#00ED64] text-sm font-bold uppercase tracking-widest transition-colors">
+              Vault
+            </Link>
+          )}
           {user && (
             <button
               onClick={handleSignOut}

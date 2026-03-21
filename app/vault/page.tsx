@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getFiles } from "../../lib/actions/fetch.actions";
 import { VaultContent } from "../../components/VaultContent";
 import { PageWrapper } from "../../components/PageWrapper";
@@ -8,8 +9,6 @@ export const metadata = {
 };
 
 export default async function VaultPage() {
-  // Fetch ALL resources once for instant client-side filtering
-  // Enforced Class 5-10 strictly in getFiles internal logic
   const allFiles = await getFiles();
 
   return (
@@ -22,25 +21,28 @@ export default async function VaultPage() {
             </div>
             <h1 className="text-5xl md:text-7xl font-black text-white tracking-[-0.04em] leading-none uppercase">Class Vault</h1>
             <p className="text-slate-400 mt-4 text-lg max-w-2xl mx-auto md:mx-0">Select a class and subject to browse curated materials.</p>
+            
+            {/* Teacher Upload Portal Entry Point - v53.0 High-Visibility */}
+            <div className="mt-8 flex justify-center md:justify-start">
+              <Link 
+                href="/admin" 
+                className="px-8 py-3 rounded-2xl bg-[#00ED64]/10 border border-[#00ED64]/30 text-[#00ED64] font-black uppercase tracking-widest hover:bg-[#00ED64]/20 transition-all group flex items-center gap-3 text-xs"
+              >
+                <div className="p-2 bg-[#00ED64]/20 rounded-lg group-hover:scale-110 transition-transform">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+                <span>Contribute Files / Teacher Upload</span>
+              </Link>
+            </div>
           </div>
 
           <VaultContent initialFiles={allFiles} />
-
-          {/* Teacher Upload Portal Entry Point - v51.0 Security Protocol */}
-          <div className="mt-20 py-12 border-t border-white/5 flex flex-col items-center">
-            <p className="text-slate-500 text-xs font-black uppercase tracking-[0.3em] mb-6">Faculty Only access</p>
-            <a 
-              href="/admin" 
-              className="px-10 py-4 rounded-2xl bg-[#00ED64]/10 border border-[#00ED64]/30 text-[#00ED64] font-black uppercase tracking-widest hover:bg-[#00ED64]/20 transition-all group flex items-center gap-3"
-            >
-              <span>Teacher Upload Portal</span>
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </a>
-          </div>
         </div>
       </div>
     </PageWrapper>
+  );
+}
   );
 }
