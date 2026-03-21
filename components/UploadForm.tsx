@@ -27,7 +27,13 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
   const [description,  setDescription]  = useState("");
   const [uploaderName, setUploaderName] = useState("");
   const [driveUrl,     setDriveUrl]     = useState("");
+  const [medium,       setMedium]       = useState<"Malayalam" | "English">("Malayalam");
+  const [fileFormat,   setFileFormat]   = useState<"PDF" | "Word" | "YouTube Link" | "Other">("PDF");
+  const [sizeEstimate, setSizeEstimate] = useState("");
+  const [isAnonymous,  setIsAnonymous]  = useState(false);
+  const [isPyq,        setIsPyq]        = useState(false);
 
+  const [timeLeft, setTimeLeft] = useState(10);
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [countdown, setCountdown] = useState(10);
   const [loading, setLoading] = useState(false);
@@ -37,14 +43,6 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
   useEffect(() => { setSubject(""); setPart(""); setChapter(""); setSpecialtyTag(""); }, [classNum]);
   useEffect(() => { setPart(""); setChapter(""); }, [subject]);
   useEffect(() => { setChapter(""); }, [part]);
-
-  useEffect(() => {
-    let timer: any;
-    if (showLegalModal && countdown > 0) {
-      timer = setInterval(() => setCountdown(prev => prev - 1), 1000);
-    }
-    return () => clearInterval(timer);
-  }, [showLegalModal, countdown]);
 
   const subjects        = classNum ? getSubjectsForClass(classNum) : [];
   const parts           = (classNum && subject) ? getPartsForSubject(classNum, subject).map((p: any) => p.label) : [];
@@ -58,7 +56,17 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
   const linkValidation = driveUrl ? validateResourceLink(driveUrl) : null;
   const linkError      = linkValidation && !linkValidation.valid ? linkValidation.reason : null;
   const formValid      = validateForm({ title, classNum, subject, part, chapter, resourceType: format, resourceLink: driveUrl });
-  const canSubmit      = formValid.valid && !linkError;
+  const canSubmit      = formValid.valid && (driveUrl && !linkError);
+
+  useEffect(() => {
+    let timer: any;
+    if (canSubmit && timeLeft > 0) {
+      timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    } else if (!canSubmit) {
+      setTimeLeft(10);
+    }
+    return () => clearInterval(timer);
+  }, [canSubmit, timeLeft]);
 
   const initiateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +82,9 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
       const res = await secureUploadHandler({ 
         title, class: Number(classNum), subject, part, chapter, 
         resource_type: docType, specialty_tag: specialtyTag, 
-        resource_link: driveUrl, description, uploader_name: uploaderName
+        resource_link: driveUrl, description, uploader_name: uploaderName,
+        medium, file_format: fileFormat, file_size_estimate: sizeEstimate,
+        is_anonymous: isAnonymous, is_pyq: isPyq
       }, verifiedEmail);
 
       if (res.success) {
@@ -149,6 +159,28 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
               <CustomSelect options={DOC_TYPES.map(t=>DOC_LABELS[t])} value={DOC_LABELS[docType]}
                 onChange={(val: any)=>{const f=DOC_TYPES.find(t=>DOC_LABELS[t]===val);if(f)setDocType(f);}}/>
             </F>
+            <F label="Medium *">
+              <CustomSelect options={["Malayalam", "English"]} value={medium} onChange={(val: any)=>setMedium(val)}/>
+            </F>
+            <F label="File Format *">
+              <CustomSelect options={["PDF", "Word", "YouTube Link", "Other"]} value={fileFormat} onChange={(val: any)=>setFileFormat(val)}/>
+            </F>
+            <F label="Estimated Size (e.g., 2MB)">
+              <input value={sizeEstimate} onChange={e=>setSizeEstimate(e.target.value)} placeholder="FILE WEIGHT" className={I}/>
+            </F>
+            <F label="Identity Preference">
+              <div className="flex items-center gap-4 h-full pt-2">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input type="checkbox" checked={isAnonymous} onChange={e=>setIsAnonymous(e.target.checked)} className="w-4 h-4 rounded border-white/10 bg-[#001E2B] text-[#00ED64] focus:ring-offset-0 focus:ring-0"/>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest group-hover:text-white transition-colors">Anonymous</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input type="checkbox" checked={isPyq} onChange={e=>setIsPyq(e.target.checked)} className="w-4 h-4 rounded border-white/10 bg-[#001E2B] text-[#00ED64] focus:ring-offset-0 focus:ring-0"/>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest group-hover:text-white transition-colors">PYQ Paper</span>
+                </label>
+              </div>
+            </F>
+
             <F label="Resource Brief / Description (Optional)" span={2}>
               <textarea value={description} onChange={e=>setDescription(e.target.value)} rows={3} placeholder="DESCRIBE THE RESOURCE METHODOLOGY..." className={`${I} resize-none`}/>
             </F>
@@ -168,21 +200,33 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
             </F>
           </div>
 
-          <button type="submit" disabled={!canSubmit||loading}
-            className="w-full mt-10 py-5 rounded-[1.5rem] font-black text-lg uppercase tracking-[0.2em] transition-all disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
-            style={{ 
-              background: canSubmit ? "#00ED64" : "rgba(0,237,100,0.1)", 
-              color: canSubmit ? "#012B39" : "#00ED64", 
-              border: canSubmit ? "none" : "1px solid rgba(0,237,100,0.3)",
-              boxShadow: canSubmit ? "0 0 40px rgba(0,237,100,0.3)" : "none" 
-            }}>
-            {loading ? (
-              <div className="flex items-center justify-center gap-3">
-                <Loader2 className="h-5 w-5 animate-spin" />
-                <span>Verifying Threat Signature...</span>
-              </div>
-            ) : "Deploy to Vault"}
-          </button>
+          <div className="mt-10 space-y-4">
+            {canSubmit && timeLeft > 0 && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl flex items-center gap-3">
+                <ShieldAlert className="h-5 w-5 text-red-500 shrink-0" />
+                <p className="text-red-500 text-[10px] font-black uppercase tracking-widest leading-relaxed">
+                  LEGAL WARNING: UPLOADING PIRATED CONTENT IS A CRIMINAL OFFENSE. YOU MAY PROCEED IN {timeLeft} SECONDS.
+                </p>
+              </motion.div>
+            )}
+
+            <button type="submit" disabled={!canSubmit||loading||timeLeft>0}
+              className="w-full py-5 rounded-[1.5rem] font-black text-lg uppercase tracking-[0.2em] transition-all disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
+              style={{ 
+                background: (canSubmit && timeLeft === 0) ? "#00ED64" : "rgba(0,237,100,0.1)", 
+                color: (canSubmit && timeLeft === 0) ? "#012B39" : "#00ED64", 
+                border: (canSubmit && timeLeft === 0) ? "none" : "1px solid rgba(0,237,100,0.3)",
+                boxShadow: (canSubmit && timeLeft === 0) ? "0 0 40px rgba(0,237,100,0.3)" : "none" 
+              }}>
+              {loading ? (
+                <div className="flex items-center justify-center gap-3">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>Verifying Threat Signature...</span>
+                </div>
+              ) : "Deploy to Vault"}
+            </button>
+          </div>
         </div>
       </form>
 

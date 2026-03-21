@@ -1,9 +1,25 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @theme {
   --color-atlas-bg: #001E2B;
   --color-atlas-card: #012B39;
   --color-atlas-green: #00ED64;
+}
+
+@layer base {
+  body {
+    @apply leading-relaxed antialiased text-slate-300 bg-[#001E2B];
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply leading-tight tracking-tight font-black uppercase text-white;
+  }
+
+  p {
+    @apply max-w-[65ch] leading-relaxed;
+  }
 }
 
 body {

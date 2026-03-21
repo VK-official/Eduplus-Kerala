@@ -23,6 +23,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {children}
             </main>
             <BottomNavWrapper />
+            <div className="flex justify-center pb-6 mt-12">
+              <div className="bg-slate-800 text-slate-300 font-bold py-1 px-4 rounded-md shadow-inner text-sm tracking-widest border border-slate-700">
+                © V.K
+              </div>
+            </div>
           </ThemeProvider>
         </GSAPProvider>
       </body>

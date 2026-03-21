@@ -40,6 +40,11 @@ export async function secureUploadHandler(data: any, uploaderEmail: string) {
           specialty_tag: data.specialty_tag,
           chapter: data.chapter,
           uploader_name: data.uploader_name || "Guest Faculty",
+          medium: data.medium,
+          file_format: data.file_format,
+          file_size_estimate: data.file_size_estimate,
+          is_anonymous: data.is_anonymous,
+          is_pyq: data.is_pyq,
           uploader_email: uploaderEmail, // STRATEGIC IDENTITY LOGGING
           created_at: new Date().toISOString(),
         }
