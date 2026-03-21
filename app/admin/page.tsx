@@ -6,6 +6,9 @@ import { UploadForm } from "../../components/UploadForm";
 import { supabase } from "../../lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, Mail, Key, Loader2, AlertCircle } from "lucide-react";
+import { SuperAdminDashboard } from "../../components/SuperAdminDashboard";
+
+const SUPER_ADMIN_EMAIL = "edupluskerala90@gmail.com";
 
 export default function AdminPage() {
   const [email, setEmail] = useState("");
@@ -30,7 +33,12 @@ export default function AdminPage() {
     e.preventDefault();
     setLoading(true); setError(null);
     try {
-      const { error } = await supabase.auth.signInWithOtp({ email });
+      const { error } = await supabase.auth.signInWithOtp({ 
+        email,
+        options: {
+          shouldCreateUser: false // Teacher must already exist or be invited
+        }
+      });
       if (error) throw error;
       setStep("otp");
     } catch (err: any) {
@@ -44,7 +52,12 @@ export default function AdminPage() {
     e.preventDefault();
     setLoading(true); setError(null);
     try {
-      const { data, error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
+      // MANDATORY: 6-Digit OTP Verification (No Magic Links) - v51.0
+      const { data, error } = await supabase.auth.verifyOtp({ 
+        email, 
+        token: otp, 
+        type: 'email' 
+      });
       if (error) throw error;
       if (data?.user) {
         setUploaderEmail(data.user.email!);
@@ -58,20 +71,29 @@ export default function AdminPage() {
   };
 
   if (step === "verified") {
+    const isSuperAdmin = uploaderEmail === SUPER_ADMIN_EMAIL;
+
     return (
       <PageWrapper>
         <div className="absolute top-4 left-1/2 -translate-x-1/2 text-[10px] font-black text-[#00ED64] uppercase tracking-[0.3em] opacity-40 z-50">
-          DEBUG: Auth Status - VERIFIED
+          Eduplus Kerala {isSuperAdmin ? "Super Admin" : "Faculty"} Console
         </div>
         <div className="min-h-screen bg-[#001E2B] pt-12 pb-32">
-          <div className="max-w-4xl mx-auto px-4">
-            <div className="flex items-center gap-3 mb-8 px-6 py-3 rounded-full bg-[#00ED64]/10 border border-[#00ED64]/20 w-fit">
+          <div className="max-w-7xl mx-auto px-4 md:px-8">
+            <div className="flex items-center gap-3 mb-12 px-6 py-3 rounded-full bg-[#00ED64]/10 border border-[#00ED64]/20 w-fit">
               <ShieldCheck className="h-5 w-5 text-[#00ED64]" />
               <span className="text-[#00ED64] text-xs font-black uppercase tracking-widest">
-                Identity Verified: {uploaderEmail}
+                Authenticated: {uploaderEmail}
               </span>
             </div>
-            <UploadForm verifiedEmail={uploaderEmail} />
+
+            {isSuperAdmin ? (
+              <SuperAdminDashboard />
+            ) : (
+              <div className="max-w-4xl">
+                <UploadForm verifiedEmail={uploaderEmail} />
+              </div>
+            )}
           </div>
         </div>
       </PageWrapper>
@@ -95,8 +117,8 @@ export default function AdminPage() {
             <div className="inline-block p-4 bg-[#00ED64]/10 rounded-3xl border border-[#00ED64]/20 mb-6">
               <ShieldCheck className="h-10 w-10 text-[#00ED64]" />
             </div>
-            <h1 className="text-3xl font-black text-white uppercase tracking-tight leading-none mb-3">Identity Logging</h1>
-            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">IT Act 2000 Compliance Gate</p>
+            <h1 className="text-3xl font-black text-white uppercase tracking-tight leading-none mb-3">Faculty Login</h1>
+            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Verify Identity to contribute</p>
           </div>
 
           <AnimatePresence mode="wait">
@@ -110,14 +132,14 @@ export default function AdminPage() {
                   <input 
                     required type="email" value={email} onChange={e=>setEmail(e.target.value)}
                     placeholder="Enter Teacher Email for Verification"
-                    className="w-full bg-[#001E2B] border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white placeholder:text-slate-600 focus:border-[#00ED64] outline-none transition-all font-bold uppercase text-sm tracking-widest"
+                    className="w-full bg-[#001E2B] border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white placeholder:text-slate-600 focus:border-[#00ED64] outline-none transition-all font-bold text-sm tracking-widest"
                   />
                 </div>
                 <button 
                   disabled={loading}
                   className="w-full py-4 rounded-2xl bg-[#00ED64] text-[#012B39] font-black uppercase tracking-widest hover:opacity-90 transition-all flex items-center justify-center gap-2"
                 >
-                  {loading ? <Loader2 className="h-5 w-5 animate-spin"/> : "Request OTP"}
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin"/> : "Request 6-Digit Code"}
                 </button>
               </motion.form>
             ) : (
@@ -129,8 +151,8 @@ export default function AdminPage() {
                   <Key className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
                   <input 
                     required type="text" maxLength={6} value={otp} onChange={e=>setOtp(e.target.value)}
-                    placeholder="ENTER 6-DIGIT CODE..."
-                    className="w-full bg-[#001E2B] border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white placeholder:text-slate-600 focus:border-[#00ED64] outline-none transition-all font-bold uppercase text-sm tracking-widest"
+                    placeholder="ENTER 6-DIGIT CODE"
+                    className="w-full bg-[#001E2B] border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white placeholder:text-slate-600 focus:border-[#00ED64] outline-none transition-all font-bold text-sm tracking-widest"
                   />
                 </div>
                 {error && <p className="text-red-500 text-[10px] font-black uppercase tracking-widest text-center">{error}</p>}
@@ -151,7 +173,7 @@ export default function AdminPage() {
           </AnimatePresence>
 
           <p className="mt-10 text-[10px] text-slate-600 font-bold leading-relaxed text-center uppercase tracking-wider">
-            By proceeding, you agree to fulfill the Intermediary Guidelines by providing verified identity logs for all uploads.
+            Safe Harbour Protection Section 79 Active. By proceeding, you agree to fulfill the Intermediary Guidelines.
           </p>
         </motion.div>
       </div>

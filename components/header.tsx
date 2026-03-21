@@ -83,9 +83,6 @@ export function Header() {
           <Link href="/vault" className="text-white/70 hover:text-[#00ED64] text-sm font-bold uppercase tracking-widest transition-colors">
             Vault
           </Link>
-          <Link href="/admin" className="text-white/70 hover:text-[#00ED64] text-sm font-bold uppercase tracking-widest transition-colors">
-            Admin
-          </Link>
           {user && (
             <button
               onClick={handleSignOut}

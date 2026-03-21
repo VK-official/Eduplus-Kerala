@@ -25,6 +25,20 @@ export default async function VaultPage() {
           </div>
 
           <VaultContent initialFiles={allFiles} />
+
+          {/* Teacher Upload Portal Entry Point - v51.0 Security Protocol */}
+          <div className="mt-20 py-12 border-t border-white/5 flex flex-col items-center">
+            <p className="text-slate-500 text-xs font-black uppercase tracking-[0.3em] mb-6">Faculty Only access</p>
+            <a 
+              href="/admin" 
+              className="px-10 py-4 rounded-2xl bg-[#00ED64]/10 border border-[#00ED64]/30 text-[#00ED64] font-black uppercase tracking-widest hover:bg-[#00ED64]/20 transition-all group flex items-center gap-3"
+            >
+              <span>Teacher Upload Portal</span>
+              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
     </PageWrapper>
