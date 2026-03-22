@@ -1,4 +1,7 @@
 import { PageWrapper } from "../../components/PageWrapper";
+import { Poppins } from 'next/font/google';
+
+const poppins = Poppins({ subsets: ['latin'], weight: ['300', '400', '600', '800'], display: 'swap' });
 
 export const metadata = {
   title: "About Us | Eduplus Kerala",
@@ -16,7 +19,7 @@ const STATS = [
 export default function AboutPage() {
   return (
     <PageWrapper>
-      <div className="min-h-screen bg-[#001E2B] pt-8 pb-32">
+      <div className={`min-h-screen bg-[#001E2B] pt-8 pb-32 ${poppins.className}`}>
         <div className="max-w-4xl mx-auto px-4 md:px-8">
 
           {/* Badge */}

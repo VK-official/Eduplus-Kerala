@@ -4,6 +4,7 @@ import { Header } from "../components/header";
 import { ThemeProvider } from "../components/theme-provider";
 import { BottomNavWrapper } from "../components/BottomNavWrapper";
 import { GSAPProvider } from "../components/GSAPProvider";
+import { MarqueeBanner } from "../components/MarqueeBanner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.className} min-h-screen flex flex-col antialiased bg-[#001E2B] text-white`} suppressHydrationWarning>
         <GSAPProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} forcedTheme="dark">
+            <MarqueeBanner />
             <Header />
             <main className="flex-1 w-full bg-[#001E2B] pb-32 relative z-0 pt-20">
               {children}

@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { GraduationCap, Microscope, Calculator, Atom, BookText } from 'lucide-react';
 
 const TICKER = ["SCERT SYLLABUS", "SMART VAULT", "A+ FOCUS", "TEACHER-CURATED"];
 
@@ -62,37 +63,23 @@ export function HeroSection() {
       />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(0,30,43,0)_0%,_rgba(0,30,43,0.9)_80%)] z-[1] pointer-events-none" />
 
-      {/* Floating 3D SVGs with Framer Motion */}
-      <div className="absolute inset-0 pointer-events-none z-[2]">
-        <FloatingSVG 
-          delay={0} 
-          className="top-[15%] left-[8%]" 
-          color="#00ED64" 
-          svg={<rect width="100" height="100" rx="20" transform="rotate(45 50 50)" fill="none" stroke="currentColor" strokeWidth="2" />}
-        />
-        <FloatingSVG 
-          delay={2} 
-          className="bottom-[20%] right-[10%]" 
-          color="#FFD700" 
-          svg={<path d="M50 10 L90 90 L10 90 Z" fill="none" stroke="currentColor" strokeWidth="2" />}
-        />
-        <FloatingSVG 
-          delay={1} 
-          className="top-[40%] right-[15%]" 
-          color="#FFFFFF" 
-          svg={<circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="10 5" />}
-        />
-        <FloatingSVG 
-          delay={3} 
-          className="bottom-[15%] left-[18%]" 
-          color="#00ED64" 
-          svg={
-            <g fill="none" stroke="currentColor" strokeWidth="1.5">
-              <rect x="20" y="20" width="60" height="60" rx="8" />
-              <path d="M20 40 H80 M20 60 H80 M40 20 V80 M60 20 V80" strokeOpacity="0.3" />
-            </g>
-          }
-        />
+      {/* V61.0 Floating Educational SVGs */}
+      <div className="absolute inset-0 pointer-events-none z-[2] overflow-hidden">
+        <div className="absolute top-20 left-[10%] opacity-20 text-[#00ED64] animate-float-item" style={{ animationDelay: '0s' }}>
+          <Atom className="w-20 h-20" />
+        </div>
+        <div className="absolute bottom-32 right-[10%] opacity-20 text-[#00ED64] animate-float-item" style={{ animationDelay: '1s' }}>
+          <Microscope className="w-24 h-24" />
+        </div>
+        <div className="absolute top-40 right-[20%] opacity-20 text-[#00ED64] animate-float-item" style={{ animationDelay: '2s' }}>
+          <GraduationCap className="w-16 h-16" />
+        </div>
+        <div className="absolute bottom-20 left-[20%] opacity-20 text-[#00ED64] animate-float-item" style={{ animationDelay: '0.5s' }}>
+          <Calculator className="w-20 h-20" />
+        </div>
+        <div className="absolute top-[60%] left-[5%] opacity-10 text-[#00ED64] animate-float-item" style={{ animationDelay: '1.5s' }}>
+          <BookText className="w-32 h-32" />
+        </div>
       </div>
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 flex flex-col items-center">

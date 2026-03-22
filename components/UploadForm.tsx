@@ -79,20 +79,32 @@ export function UploadForm({ verifiedEmail }: { verifiedEmail: string }) {
     if (countdown > 0 || loading) return;
     setLoading(true); setResult(null);
     try {
-      const res = await secureUploadHandler({ 
-        title, class: Number(classNum), subject, part, chapter, 
-        resource_type: docType, specialty_tag: specialtyTag, 
-        resource_link: driveUrl, description, uploader_name: uploaderName,
-        medium, file_format: fileFormat, file_size_estimate: sizeEstimate,
-        is_anonymous: isAnonymous, is_pyq: isPyq
-      }, verifiedEmail);
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('classLevel', classNum);
+      formData.append('subject', subject);
+      formData.append('part', part);
+      formData.append('chapter', chapter);
+      formData.append('resource_type', docType);
+      formData.append('specialty_tag', specialtyTag);
+      formData.append('fileUrl', driveUrl);
+      formData.append('description', description);
+      formData.append('uploaderName', uploaderName);
+      formData.append('medium', medium);
+      formData.append('format', fileFormat);
+      formData.append('file_size_estimate', sizeEstimate);
+      formData.append('is_anonymous', isAnonymous ? 'true' : 'false');
+      formData.append('is_pyq', isPyq ? 'true' : 'false');
+      formData.append('verifiedEmail', verifiedEmail);
+
+      const res = await secureUploadHandler(formData);
 
       if (res.success) {
         setResult({ type: "success", msg: "LEGAL TRANSMISSION SUCCESSFUL. Identity Logged." });
         setTitle(""); setDescription(""); setDriveUrl(""); setSpecialtyTag("");
         setShowLegalModal(false);
       } else {
-        throw new Error(res.error);
+        throw new Error(res.message);
       }
     } catch (err: any) {
       setResult({ type: "error", msg: err.message || "Upload failed." });

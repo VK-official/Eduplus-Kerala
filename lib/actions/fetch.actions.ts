@@ -267,3 +267,23 @@ export const getTrendingFiles = async (limit: number = 5) => {
     return [];
   }
 };
+
+export const incrementUpvote = async (id: string) => {
+  if (!supabase) return;
+  try {
+    const { data: current, error: getError } = await supabase
+      .from('resources')
+      .select('upvotes')
+      .eq('id', id)
+      .single();
+
+    if (getError) throw getError;
+
+    await supabase
+      .from('resources')
+      .update({ upvotes: (current.upvotes || 0) + 1 })
+      .eq('id', id);
+  } catch (error) {
+    console.error("Error incrementing upvote:", error);
+  }
+};
