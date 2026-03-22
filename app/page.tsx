@@ -1,38 +1,13 @@
 import Link from "next/link";
 import { HeroSection } from "../components/HeroSection";
+import FaqSection from '../components/FaqSection';
+import SpecialitiesSection from '../components/SpecialitiesSection';
 import { PageWrapper } from "../components/PageWrapper";
 import { BookOpen, Trophy, Star, TrendingUp, Users, Target } from "lucide-react";
 import { getTopResources } from "../lib/actions/fetch.actions";
+import { Poppins } from 'next/font/google';
 
-const EXAM_SPOTLIGHT = [
-  {
-    label: "SSLC Focus",
-    grade: "Class 10",
-    icon: Target,
-    color: "from-blue-500/20 to-blue-600/5",
-    border: "border-blue-500/20",
-    iconColor: "text-blue-400",
-    items: ["Model Question Papers", "Previous Year Papers", "Special Revision Notes", "Chapter-wise Summaries"],
-  },
-  {
-    label: "HS Revision",
-    grade: "Class 8-9",
-    icon: BookOpen,
-    color: "from-purple-500/20 to-purple-600/5",
-    border: "border-purple-500/20",
-    iconColor: "text-purple-400",
-    items: ["Terminal Exam Notes", "Important Questions", "Subject Guides", "Practical Tips"],
-  },
-  {
-    label: "UP Foundation",
-    grade: "Class 5-7",
-    icon: Trophy,
-    color: "from-yellow-500/20 to-yellow-600/5",
-    border: "border-yellow-500/20",
-    iconColor: "text-yellow-400",
-    items: ["Basic Science Notes", "Maths Worksheets", "Language Guides", "Skill Development"],
-  },
-];
+const poppins = Poppins({ subsets: ['latin'], weight: ['300', '400', '600', '700', '900'], display: 'swap' });
 
 export default async function HomePage() {
   const topResources = await getTopResources(5);
@@ -43,54 +18,17 @@ export default async function HomePage() {
         {/* ── HERO ── */}
         <HeroSection />
 
-        {/* ── EXAM SPOTLIGHT ── */}
-        <section className="max-w-screen-xl mx-auto px-4 md:px-8 py-20">
-          <div className="mb-12">
-            <div className="inline-block py-1.5 px-4 rounded-full bg-[#00ED64]/10 border border-[#00ED64]/20 text-[#00ED64] text-xs font-bold tracking-widest uppercase mb-4">
-              Exam Focus
-            </div>
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-[-0.04em] leading-tight uppercase">Board Exam Vault</h2>
-            <p className="text-slate-400 mt-3 max-w-xl">Curated resources for every major board examination stage.</p>
-          </div>
+        <FaqSection />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {EXAM_SPOTLIGHT.map((exam) => {
-              const Icon = exam.icon;
-              return (
-                <Link key={exam.label} href="/vault" className="group">
-                  <div className={`h-full rounded-3xl border ${exam.border} bg-gradient-to-b ${exam.color} backdrop-blur-md p-8 flex flex-col gap-6 hover:scale-[1.02] transition-transform cursor-pointer`}>
-                    <div className="flex items-center justify-between">
-                      <div className={`p-3 rounded-2xl bg-white/5 ${exam.iconColor}`}>
-                        <Icon className="h-7 w-7" />
-                      </div>
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{exam.grade}</span>
-                    </div>
-                    <h3 className="text-2xl font-black text-white">{exam.label}</h3>
-                    <ul className="space-y-2">
-                      {exam.items.map(item => (
-                        <li key={item} className="flex items-center gap-2 text-slate-400 text-sm font-medium">
-                          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${exam.iconColor} bg-current`}></span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                    <div className={`mt-auto text-sm font-bold ${exam.iconColor} uppercase tracking-widest`}>
-                      Browse Vault →
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
+        <SpecialitiesSection />
 
         {/* ── OUR MISSION ── */}
-        <section className="border-y border-white/5 py-24 px-4 md:px-8">
+        <section className={`border-y border-white/5 py-24 px-4 md:px-8 ${poppins.className}`}>
           <div className="max-w-4xl mx-auto">
             <div className="inline-block py-1.5 px-4 rounded-full bg-[#00ED64]/10 border border-[#00ED64]/20 text-[#00ED64] text-xs font-bold tracking-widest uppercase mb-8">
               Our Mission
             </div>
-            <p className="text-slate-300 text-2xl md:text-3xl font-medium leading-relaxed max-w-[65ch]">
+            <p className="text-slate-300 text-3xl md:text-4xl lg:text-5xl font-bold leading-tight max-w-[65ch]">
               To democratize high-quality academic resources for SCERT Kerala students — making model questions, previous papers, and special revision notes accessible to every student, regardless of location or financial circumstance.
             </p>
             <p className="text-slate-500 text-lg mt-8 max-w-[65ch] leading-relaxed">

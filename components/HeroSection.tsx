@@ -89,7 +89,7 @@ export function HeroSection() {
           transition={{ duration: 0.8 }}
           className="flex flex-col items-center text-center"
         >
-          <h1 className="bg-gradient-to-r from-yellow-400 via-green-400 to-[#00ED64] text-[rgba(0,0,0,0)] bg-clip-text font-black text-7xl md:text-9xl uppercase leading-none pb-2">
+          <h1 className="bg-gradient-to-r from-yellow-400 via-green-400 to-[#00ED64] text-[rgba(0,0,0,0)] bg-clip-text font-black text-5xl md:text-7xl lg:text-8xl uppercase leading-none pb-2">
             Eduplus Kerala
           </h1>
 
@@ -107,6 +107,15 @@ export function HeroSection() {
                 {TICKER[tickIdx]}
               </motion.p>
             </AnimatePresence>
+          </div>
+
+          <div className="mt-12">
+            <button 
+              onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+              className="px-8 py-4 bg-[#00ED64]/10 text-[#00ED64] border border-[#00ED64]/30 rounded-full font-bold uppercase tracking-widest hover:bg-[#00ED64]/20 transition-colors"
+            >
+              How it Works
+            </button>
           </div>
         </motion.div>
       </div>

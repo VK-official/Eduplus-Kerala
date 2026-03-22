@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { getFiles, incrementUpvote } from "../lib/actions/fetch.actions";
 import Link from "next/link";
-import { FileText, BookOpen, FileQuestion, ChevronRight, Loader2, ThumbsUp, Eye, Award, Search, X, ShieldCheck } from "lucide-react";
+import { FileText, BookOpen, FileQuestion, ChevronRight, Loader2, ThumbsUp, Eye, Award, Search, X, ShieldCheck, User, Share2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Resource {
@@ -113,7 +113,7 @@ export function VaultContent({ initialFiles = [] }: { initialFiles?: Resource[] 
     <div className="w-full flex justify-center">
       <div className="w-full max-w-7xl">
         {/* FILTERS GRID */}
-        <div className="w-full bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-2xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div className="w-full bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-2xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <input 
             value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search title, subject, teacher..." 
@@ -170,7 +170,7 @@ export function VaultContent({ initialFiles = [] }: { initialFiles?: Resource[] 
                     <div className="h-px flex-1 bg-white/5" />
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {grouped[tag].map((res) => (
                       <div key={res.id} className="group relative flex flex-col md:flex-row md:items-center gap-6 p-6 rounded-[2rem] border border-white/5 bg-[#012B39]/40 backdrop-blur-3xl hover:border-[#00ED64]/30 hover:bg-[#012B39]/70 transition-all">
                         <div className="flex-1 min-w-0">
@@ -186,11 +186,9 @@ export function VaultContent({ initialFiles = [] }: { initialFiles?: Resource[] 
                           </div>
                           <h3 className="text-lg font-black text-white group-hover:text-[#00ED64] transition-colors line-clamp-1">{res.title}</h3>
                           <div className="flex items-center gap-4 mt-3">
-                            <Link href={`/teacher/${encodeURIComponent(res.uploader_name || "Guest")}`} className="flex items-center gap-2 group/t">
-                              <div className="w-5 h-5 rounded-full bg-[#00ED64]/20 flex items-center justify-center border border-[#00ED64]/30">
-                                <Award className="h-3 w-3 text-[#00ED64]" />
-                              </div>
-                              <span className="text-slate-400 text-[10px] font-bold group-hover/t:text-[#00ED64] transition-colors hover:underline">{res.uploader_name || "Faculty Member"}</span>
+                            <Link href={`/teacher/${encodeURIComponent(res.uploader_name || "Faculty Member")}`} className="text-sm font-bold text-slate-400 hover:text-[#00ED64] transition-colors flex items-center gap-1 group">
+                              <User className="w-3 h-3 group-hover:scale-110 transition-transform" />
+                              {res.uploader_name || "Faculty Member"}
                             </Link>
                             <span className="text-slate-800">|</span>
                             <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">{res.subject}</span>
@@ -207,7 +205,7 @@ export function VaultContent({ initialFiles = [] }: { initialFiles?: Resource[] 
                             <span className="font-bold">{res.upvotes || 0}</span>
                           </button>
 
-                          <div className="flex items-center gap-3">
+                          <div className="flex flex-wrap items-center gap-3 mt-4">
                             {/* Quick Preview Button */}
                             <button 
                               onClick={() => setPreviewUrl(res.resource_link)}
@@ -219,6 +217,18 @@ export function VaultContent({ initialFiles = [] }: { initialFiles?: Resource[] 
                             <a href={res.resource_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-[#00ED64] hover:bg-[#00ff6e] text-[#001E2B] rounded-lg text-sm font-black transition-colors">
                               DOWNLOAD
                             </a>
+
+                            {/* Share Button */}
+                            <button 
+                              onClick={() => {
+                                const text = encodeURIComponent(`📚 Found this on Eduplus Kerala!\n\n${res.title} (Class ${res.class} ${res.subject})\n\nGet it here for free: https://edupluskerala.com/vault`);
+                                window.open(`https://wa.me/?text=${text}`, '_blank');
+                              }}
+                              className="flex items-center justify-center p-2 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white rounded-lg transition-colors group"
+                              title="Share to WhatsApp"
+                            >
+                              <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                            </button>
                           </div>
                         </div>
                       </div>

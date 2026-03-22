@@ -17,21 +17,12 @@ export function BottomNav({ isTeacher }: { isTeacher: boolean }) {
 
   return (
     <motion.div
-      className="fixed bottom-8 left-1/2 z-[100] flex"
-      style={{ x: "-50%" }}
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-md bg-[#001E2B]/15 backdrop-blur-xl border border-slate-700/50 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.5)] z-50 overflow-hidden"
       initial={{ y: 120, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 28, delay: 0.4 }}
     >
-      <div
-        className="flex items-center gap-12 px-8 py-4 rounded-full border border-white/10"
-        style={{
-          background: "rgba(0, 30, 43, 0.40)",
-          backdropFilter: "blur(30px)",
-          WebkitBackdropFilter: "blur(30px)",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.12), inset 0 -1px 1px rgba(0,0,0,0.3)",
-        }}
-      >
+      <div className="flex justify-around items-center p-4">
         {allLinks.map((link) => {
           const active = pathname === link.href;
           const Icon = link.icon;

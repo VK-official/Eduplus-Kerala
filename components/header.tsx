@@ -34,30 +34,9 @@ export function Header() {
   return (
     <nav className="fixed top-0 w-full z-50 bg-[#001E2B]/95 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 py-4 shadow-lg">
       <Link href="/" className="flex items-center gap-3 group cursor-pointer hover:opacity-90 transition-opacity">
-        <div className="book-perspective w-10 h-10 relative">
-          {/* THE SPINE */}
-          <div className="absolute left-0 top-0 w-1 h-full bg-[#00a340] rounded-sm shadow-[0_0_10px_rgba(0,237,100,0.4)] z-20"></div>
-          
-          {/* BACK COVER (Static) */}
-          <div className="absolute left-1 w-8 h-full bg-[#001E2B] border border-slate-700 rounded-sm"></div>
-          
-          {/* MIDDLE PAGES (Visual Thickness) */}
-          <div className="absolute left-1.5 w-7 h-[90%] top-[5%] bg-slate-200 rounded-sm shadow-inner"></div>
-          
-          {/* THE FLIPPING PAGE */}
-          <div className="absolute left-1 w-8 h-full origin-left z-10 [transform-style:preserve-3d] animate-[realisticFlip_3s_infinite_ease-in-out]">
-            {/* Front of flipping page */}
-            <div className="absolute inset-0 bg-[#00ED64] rounded-sm flex items-center justify-center backface-hidden border border-[#001E2B]">
-              <span className="text-[#001E2B] font-black text-sm">E</span>
-            </div>
-            {/* Back of flipping page */}
-            <div className="absolute inset-0 bg-[#008f3a] rounded-sm [transform:rotateY(180deg)] backface-hidden border border-[#001E2B]"></div>
-            {/* Shadow Overlay during flip */}
-            <div className="absolute inset-0 bg-black animate-[pageShadow_3s_infinite] pointer-events-none"></div>
-          </div>
+        <div className="w-10 h-10 bg-slate-900/80 border border-slate-700 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(0,237,100,0.2)] group-hover:border-[#00ED64]/50 transition-colors">
+          <BookOpen className="w-6 h-6 text-[#00ED64]" />
         </div>
-
-        {/* LOGO TEXT WITH GRADIENT */}
         <div className="flex flex-col leading-none">
           <span className="text-white font-black text-xl tracking-tighter">EDUPLUS</span>
           <span className="text-[#00ED64] font-bold text-[10px] tracking-[0.3em] uppercase">Kerala</span>

@@ -41,6 +41,11 @@ export default function AdminPage() {
     e.preventDefault();
     setLoading(true); setError(null);
     try {
+      if (!email.toLowerCase().endsWith('@edupluskerala.in') && !email.toLowerCase().endsWith('@gmail.com') && !email.toLowerCase().endsWith('@kerala.gov.in') && !email.toLowerCase().endsWith('@eduplus.edu')) {
+        setErrorMsg("Unauthorized. This portal is strictly for verified educators.");
+        setLoading(false);
+        return;
+      }
       const { error } = await supabase.auth.signInWithOtp({ 
         email,
         options: {
@@ -142,6 +147,14 @@ export default function AdminPage() {
             </div>
             <h1 className="text-3xl font-black text-white uppercase tracking-tight leading-none mb-3">Faculty Login</h1>
             <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Verify Identity to contribute</p>
+          </div>
+
+          <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/50 rounded-xl flex items-start gap-3">
+            <AlertCircle className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" />
+            <div>
+              <h3 className="text-amber-500 font-bold uppercase tracking-wide text-sm mb-1">Critical Session Notice</h3>
+              <p className="text-amber-500/80 text-xs leading-relaxed">Due to platform security protocols, you can only sign in to your account once per active session. Please do not log out unless you are switching devices.</p>
+            </div>
           </div>
 
           <AnimatePresence mode="wait">
