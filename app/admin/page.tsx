@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, Mail, Key, Loader2, AlertCircle, LogOut } from "lucide-react";
 import { SuperAdminDashboard } from "../../components/SuperAdminDashboard";
 
-const SUPER_ADMIN_EMAIL = "edupluskerala90@gmail.com";
+const SUPER_ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL || process.env.ADMIN_EMAIL;
 
 export default function AdminPage() {
   const router = useRouter();

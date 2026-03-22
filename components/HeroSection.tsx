@@ -136,7 +136,7 @@ export function HeroSection() {
 
             {/* GitHub Redirect Button */}
             <a 
-              href="https://github.com/VK-official/Eduplus-Kerala" 
+              href="https://github.com/your-username/eduplus-kerala" 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 border border-slate-700 hover:border-[#00ED64] text-white rounded-xl transition-all group"

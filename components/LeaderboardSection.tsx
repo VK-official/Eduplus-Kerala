@@ -4,7 +4,7 @@ import { Trophy, Medal, Award, Upload, ThumbsUp } from 'lucide-react';
 export default function LeaderboardSection() {
   // Mock aggregated data (To be replaced with a Supabase grouped query later)
   const leaders = [
-    { rank: 1, name: "V.K", role: "Veteran Uploader", uploads: 142, upvotes: 3800 },
+    { rank: 1, name: "Eduplus Contributor", role: "Veteran Uploader", uploads: 142, upvotes: 3800 },
     { rank: 2, name: "Suresh Math", role: "Top Teacher", uploads: 89, upvotes: 2100 },
     { rank: 3, name: "Anjali S.", role: "Student Contributor", uploads: 45, upvotes: 1200 },
     { rank: 4, name: "Rahul Dev", role: "Contributor", uploads: 30, upvotes: 850 },
