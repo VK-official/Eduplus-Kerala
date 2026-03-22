@@ -4,7 +4,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { GraduationCap, Microscope, Calculator, Atom, BookText } from 'lucide-react';
+import { GraduationCap, Microscope, Calculator, Atom, BookText, Github } from 'lucide-react';
 
 const TICKER = ["SCERT SYLLABUS", "SMART VAULT", "A+ FOCUS", "TEACHER-CURATED"];
 
@@ -117,6 +117,32 @@ export function HeroSection() {
               How it Works
             </button>
           </div>
+
+          {/* V84.0 Open Source Trust Hero */}
+          <div className="mt-16 pt-8 border-t border-slate-800/50 max-w-2xl mx-auto">
+            {/* Malayalam Heading */}
+            <h3 className="text-[#00ED64] font-bold text-lg mb-4">
+              നിങ്ങൾക്ക് എങ്ങനെ ഞങ്ങളെ വിശ്വസിക്കാം?
+            </h3>
+            
+            {/* English Explanation */}
+            <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+              Eduplus is 100% **Open Source**. This means our entire source code is public for anyone to inspect, 
+              ensuring your data is safe and our resources are verified.
+            </p>
+
+            {/* GitHub Redirect Button */}
+            <a 
+              href="https://github.com/VK-official/Eduplus-Kerala" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 border border-slate-700 hover:border-[#00ED64] text-white rounded-xl transition-all group"
+            >
+              <Github className="w-5 h-5 group-hover:text-[#00ED64]" />
+              <span>VIEW SOURCE CODE</span>
+            </a>
+          </div>
+
         </motion.div>
       </div>
     </div>

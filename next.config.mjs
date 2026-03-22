@@ -11,16 +11,6 @@ const nextConfig = {
       fullUrl: false,
     },
   },
-
-  // V80.0 Production Build Optimization
-  // Safely bypass ESLint warnings and minor TypeScript structural halting errors
-  // guaranteeing a clean Vercel compilation runway.
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
 };
 
 export default nextConfig;
