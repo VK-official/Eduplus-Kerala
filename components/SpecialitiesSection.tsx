@@ -8,7 +8,6 @@ export default function SpecialitiesSection() {
   const specialities = [
     { title: "Teacher-Verified", desc: "Every PDF and link is strictly aligned with the SCERT Kerala syllabus.", icon: <ShieldCheck className="w-8 h-8 text-[#00ED64]" /> },
     { title: "Smart Vault Engine", desc: "Instantly filter thousands of files by class, subject, and medium with zero lag.", icon: <Search className="w-8 h-8 text-[#00ED64]" /> },
-    { title: "Bilingual UI", desc: "Seamlessly switch between English and Malayalam to learn in your comfort zone.", icon: <Globe className="w-8 h-8 text-[#00ED64]" /> },
     { title: "100% Free Forever", desc: "No paywalls, no hidden fees, and low-data preview modes to save your internet.", icon: <CheckCircle2 className="w-8 h-8 text-[#00ED64]" /> }
   ];
 
@@ -21,7 +20,7 @@ export default function SpecialitiesSection() {
         <p className="text-slate-400 text-lg max-w-2xl mx-auto">Built purely for speed, accuracy, and accessibility.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {specialities.map((spec, i) => (
           <div key={i} className="flex flex-col items-center text-center p-6 bg-transparent border-t border-slate-800 pt-8">
             <div className="mb-6 p-4 bg-slate-900/50 rounded-full border border-slate-800">{spec.icon}</div>

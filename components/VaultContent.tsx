@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { getFiles, incrementUpvote } from "../lib/actions/fetch.actions";
 import Link from "next/link";
-import { FileText, BookOpen, FileQuestion, ChevronRight, Loader2, ThumbsUp, Eye, Award, Search, X, ShieldCheck, User, Share2 } from "lucide-react";
+import { FileText, BookOpen, FileQuestion, ChevronRight, Loader2, ThumbsUp, Eye, Award, Search, X, ShieldCheck, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Resource {
@@ -217,18 +217,6 @@ export function VaultContent({ initialFiles = [] }: { initialFiles?: Resource[] 
                             <a href={res.resource_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-[#00ED64] hover:bg-[#00ff6e] text-[#001E2B] rounded-lg text-sm font-black transition-colors">
                               DOWNLOAD
                             </a>
-
-                            {/* Share Button */}
-                            <button 
-                              onClick={() => {
-                                const text = encodeURIComponent(`📚 Found this on Eduplus Kerala!\n\n${res.title} (Class ${res.class} ${res.subject})\n\nGet it here for free: https://edupluskerala.com/vault`);
-                                window.open(`https://wa.me/?text=${text}`, '_blank');
-                              }}
-                              className="flex items-center justify-center p-2 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white rounded-lg transition-colors group"
-                              title="Share to WhatsApp"
-                            >
-                              <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                            </button>
                           </div>
                         </div>
                       </div>

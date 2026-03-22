@@ -5,6 +5,7 @@ import { ThemeProvider } from "../components/theme-provider";
 import { BottomNavWrapper } from "../components/BottomNavWrapper";
 import { GSAPProvider } from "../components/GSAPProvider";
 import { MarqueeBanner } from "../components/MarqueeBanner";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </ThemeProvider>
         </GSAPProvider>
+        <FeedbackWidget />
       </body>
     </html>
   );

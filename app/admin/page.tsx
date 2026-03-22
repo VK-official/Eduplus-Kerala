@@ -53,7 +53,11 @@ export default function AdminPage() {
         }
       });
       if (error) {
-        console.error("Supabase OTP Error:", error.message);
+        console.error("Supabase OTP Error:", error);
+        if (error.status === 429 || error.message.toLowerCase().includes("rate limit") || error.message.toLowerCase().includes("too many requests")) {
+          setErrorMsg("Login limit reached for security. Please try again after some time. If this persists, use the Report button below.");
+          return;
+        }
         setErrorMsg(error.message);
         return;
       }

@@ -1,4 +1,4 @@
-import { FileText, Users, HardDrive } from 'lucide-react';
+import { FileText, Users, HardDrive, MessageSquare } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { redirect } from 'next/navigation';
 import { AdminAnnouncementSetter } from '../../../components/AdminAnnouncementSetter';
@@ -10,13 +10,20 @@ export const dynamic = "force-dynamic";
 export default async function AdminDashboard() {
   const { data: { user } } = await supabase.auth.getUser();
 
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || process.env.ADMIN_EMAIL || "edupluskerala90@gmail.com";
+  const adminEmail = process.env.ADMIN_EMAIL;
 
   if (!user || user.email !== adminEmail) {
     redirect('/');
   }
 
   const materials = await getFiles();
+  
+  // Fetch platform feedback
+  const { data: feedbackRows } = await supabase
+    .from('platform_feedback')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(10);
   const totalFiles = materials.length;
   const uniqueUploaders = new Set(materials.map((m: any) => m.uploader_name)).size;
   
@@ -83,6 +90,31 @@ export default async function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+
+        {/* FEEDBACK INBOX */}
+        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden mt-10">
+          <div className="p-6 border-b border-slate-800 flex items-center gap-3">
+            <MessageSquare className="text-[#00ED64] w-5 h-5" />
+            <h2 className="font-bold uppercase tracking-widest text-[#00ED64]">Platform Feedback Inbox</h2>
+          </div>
+          <div className="divide-y divide-slate-800">
+            {feedbackRows && feedbackRows.length > 0 ? (
+              feedbackRows.map((fb: any) => (
+                <div key={fb.id} className="p-6">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-bold text-slate-300">{fb.sender || "User"}</span>
+                    <span className="text-xs text-slate-500 uppercase tracking-widest">{new Date(fb.created_at).toLocaleString()}</span>
+                  </div>
+                  <p className="text-slate-400 text-sm leading-relaxed">{fb.message}</p>
+                </div>
+              ))
+            ) : (
+              <div className="p-10 text-center text-slate-500 font-bold uppercase tracking-widest text-sm">
+                No feedback received yet.
+              </div>
+            )}
           </div>
         </div>
       </div>

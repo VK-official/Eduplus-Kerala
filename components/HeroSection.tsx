@@ -5,6 +5,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GraduationCap, Microscope, Calculator, Atom, BookText, Github } from 'lucide-react';
+import { Noto_Sans_Malayalam } from 'next/font/google';
+
+const notoSansMalayalam = Noto_Sans_Malayalam({ subsets: ['malayalam'], weight: ['600', '700', '800'], display: 'swap' });
 
 const TICKER = ["SCERT SYLLABUS", "SMART VAULT", "A+ FOCUS", "TEACHER-CURATED"];
 
@@ -121,7 +124,7 @@ export function HeroSection() {
           {/* V84.0 Open Source Trust Hero */}
           <div className="mt-16 pt-8 border-t border-slate-800/50 max-w-2xl mx-auto">
             {/* Malayalam Heading */}
-            <h3 className="text-[#00ED64] font-bold text-lg mb-4">
+            <h3 className={`text-[#00ED64] font-bold text-xl mb-4 drop-shadow-[0_0_15px_rgba(0,237,100,0.6)] ${notoSansMalayalam.className}`}>
               നിങ്ങൾക്ക് എങ്ങനെ ഞങ്ങളെ വിശ്വസിക്കാം?
             </h3>
             

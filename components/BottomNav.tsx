@@ -7,7 +7,7 @@ import { Home, Database, Book, Users, ShieldCheck } from "lucide-react";
 const links = [
   { name: "Home",    href: "/",          icon: Home },
   { name: "Vault",   href: "/vault",     icon: Database },
-  { name: "Books",   href: "/books", icon: Book },
+  { name: "Books",   href: "/textbooks", icon: Book },
   { name: "About",   href: "/about",     icon: Users },
 ];
 
